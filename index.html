@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ドリームダービー ~ Dream Derby ~</title>
+<style>
+  :root{
+    --gold:#e6c35c;
+    --gold-dark:#a8842f;
+    --green:#0b4d2c;
+    --green-dark:#052e19;
+    --panel:#12331f;
+    --panel-light:#1c4a2c;
+    --red:#c0392b;
+    --text:#f3ead0;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+    background:radial-gradient(circle at 50% 0%, #1a5c33, #052414 70%);
+    color:var(--text);
+    overflow-x:hidden;
+  }
+  #app{max-width:960px;margin:0 auto;padding:14px;min-height:100vh;}
+  .hidden{display:none !important;}
+  .screen{animation:fadeIn .35s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .title-badge{
+    text-align:center;padding:40px 10px 20px;
+  }
+  .title-badge h1{
+    font-size:2.5em;margin:0;
+    background:linear-gradient(180deg,#fff2c0,var(--gold) 40%,var(--gold-dark));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 2px 0 rgba(0,0,0,.3);
+    letter-spacing:2px;
+  }
+  .title-badge p{color:#bcd8bf;margin:6px 0 0;font-size:.95em;}
+
+  .panel{
+    background:linear-gradient(180deg,var(--panel-light),var(--panel));
+    border:2px solid var(--gold-dark);
+    border-radius:12px;
+    padding:16px;
+    margin:14px 0;
+    box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .stat-line{display:flex;justify-content:space-between;font-size:.95em;color:#dcefe0;margin:2px 0;}
+  .btn{
+    background:linear-gradient(180deg,#f6dd8a,var(--gold) 60%,var(--gold-dark));
+    border:none;border-radius:8px;
+    color:#3a2a05;font-weight:bold;
+    padding:10px 18px;font-size:1em;
+    cursor:pointer;
+    box-shadow:0 3px 0 #7a5f1f, 0 4px 8px rgba(0,0,0,.4);
+    transition:transform .08s;
+  }
+  .btn:hover{filter:brightness(1.06);}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #7a5f1f;}
+  .btn.secondary{
+    background:linear-gradient(180deg,#4c8a63,#2b5c3d);
+    color:#eafff0;box-shadow:0 3px 0 #1c4028, 0 4px 8px rgba(0,0,0,.4);
+  }
+  .btn.small{padding:6px 10px;font-size:.85em;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .money-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--green-dark);
+    border:1px solid var(--gold-dark);
+    border-radius:10px;
+    padding:8px 14px;margin-bottom:10px;
+    font-size:.95em;
+  }
+  .money-bar b{color:var(--gold);font-size:1.15em;}
+
+  table{width:100%;border-collapse:collapse;font-size:.88em;}
+  th,td{padding:6px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);}
+  th{color:var(--gold);font-weight:600;}
+
+  .cap{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:24px;height:24px;border-radius:50%;
+    font-size:.8em;font-weight:bold;color:#fff;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
+    border:1px solid rgba(255,255,255,.4);
+  }
+  .horse-row{cursor:pointer;}
+  .horse-row:hover{background:rgba(255,255,255,.05);}
+
+  .style-badge{
+    display:inline-block;padding:1px 7px;border-radius:8px;
+    font-size:.75em;color:#fff;font-weight:bold;
+    text-shadow:0 1px 1px rgba(0,0,0,.4);
+  }
+  .mark-symbol{
+    display:inline-block;font-size:1.4em;font-weight:bold;
+    text-shadow:0 1px 2px rgba(0,0,0,.5);
+  }
+  .horse-comment{
+    font-size:.78em;color:#cfe8d4;font-style:italic;margin-top:2px;
+  }
+
+  #betPanel{display:flex;flex-direction:column;gap:16px;width:100%;}
+  #horsePickers{display:flex;flex-direction:column;gap:12px;width:100%;}
+  #horsePickers > div{display:flex;flex-direction:column;gap:4px;width:100%;}
+  .chip{
+    background:#1c4a2c;border:1px solid var(--gold-dark);
+    color:var(--text);border-radius:20px;padding:6px 13px;cursor:pointer;font-size:.9em;
+    user-select:none;
+  }
+  .chip.active,.chip:hover{background:var(--gold);color:#3a2a05;font-weight:bold;}
+  .formation-chip-row{display:flex;flex-wrap:wrap;gap:6px;width:100%;}
+  .formation-chip-row .chip{padding:6px 12px;font-size:.85em;min-width:34px;text-align:center;}
+  .amt-row{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .amt-row input[type=number]{width:70px;text-align:center;}
+  #oddsPreview{font-weight:bold;color:var(--gold);font-size:1.1em;}
+  #oddsPreview.invalid{color:#ff8a7a;font-size:.85em;font-weight:normal;}
+
+  .betslip-item{display:flex;justify-content:space-between;align-items:center;
+    background:rgba(0,0,0,.2);padding:6px 10px;border-radius:6px;margin:4px 0;font-size:.88em;}
+
+  #trackCanvas{width:100%;height:auto;border-radius:10px;border:2px solid var(--gold-dark);background:#0e5a30;display:block;}
+  #commentary{
+    background:var(--green-dark);border:1px solid var(--gold-dark);border-radius:8px;
+    padding:8px 12px;margin-top:8px;min-height:1.4em;font-size:.95em;color:var(--gold);
+  }
+
+  .result-rank{
+    display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .rank-num{
+    width:28px;height:28px;border-radius:50%;background:var(--gold);color:#3a2a05;
+    display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;
+  }
+  .rank-num.gold{background:linear-gradient(180deg,#fff3c4,#e6c35c);}
+  .rank-num.silver{background:linear-gradient(180deg,#f2f2f2,#c0c0c0);}
+  .rank-num.bronze{background:linear-gradient(180deg,#e8b482,#b5732f);}
+
+  .payout-win{color:#7CFC98;font-weight:bold;}
+  .payout-lose{color:#ff9d8a;}
+
+  .center{text-align:center;}
+  h2.section{color:var(--gold);border-bottom:1px solid var(--gold-dark);padding-bottom:6px;margin-top:0;}
+  .small-note{font-size:.8em;color:#a9c9ae;}
+  select,input[type=number]{
+    background:#0e2c18;color:var(--text);border:1px solid var(--gold-dark);border-radius:6px;padding:6px;
+    font-size:16px; /* prevents iOS Safari from auto-zooming in on focus */
+  }
+  .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .table-scroll table{min-width:480px;}
+
+  /* ---------- Smartphone layout ---------- */
+  @media (max-width:600px){
+    #app{padding:8px;}
+    .title-badge{padding:26px 6px 14px;}
+    .title-badge h1{font-size:1.7em;letter-spacing:1px;}
+    .title-badge p{font-size:.85em;}
+    .panel{padding:12px;margin:10px 0;border-radius:10px;}
+    h2.section{font-size:1.05em;}
+    .btn{padding:11px 14px;font-size:.95em;}
+    .btn.small{padding:9px 12px;font-size:.85em;}
+    /* buttons grouped in a row become equal-width tap targets that wrap cleanly */
+    .row{gap:8px;}
+    .row .btn{flex:1 1 auto;min-width:110px;}
+    .money-bar{font-size:.82em;padding:7px 10px;gap:6px;flex-wrap:wrap;}
+    table{font-size:.78em;}
+    th,td{padding:5px 3px;}
+    .cap{width:20px;height:20px;font-size:.72em;}
+    .style-badge{font-size:.68em;padding:1px 5px;}
+    .mark-symbol{font-size:1.15em;}
+    .horse-comment{font-size:.72em;}
+    .chip{padding:8px 13px;font-size:.85em;}
+    .formation-chip-row .chip{padding:7px 11px;font-size:.8em;min-width:38px;}
+    .amt-row input[type=number]{width:64px;}
+    #oddsPreview{font-size:1em;}
+    .result-rank{flex-wrap:wrap;gap:6px 8px;}
+    .betslip-item{font-size:.8em;padding:6px 8px;}
+    #commentary{font-size:.85em;padding:7px 10px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TITLE -->
+  <div id="screen-title" class="screen">
+    <div class="title-badge">
+      <h1>🏇 ドリームダービー</h1>
+      <p>Dream Derby ― 予想と一発逆転の競馬シミュレーション</p>
+    </div>
+    <div class="panel center">
+      <p>所持メダル <b style="color:var(--gold);font-size:1.3em;" id="titleMoney">10,000</b> 枚からスタート</p>
+      <p class="small-note">歴代最高メダル: <span id="titleBest">10,000</span> 枚</p>
+      <button class="btn" id="btnStart" style="font-size:1.2em;padding:14px 40px;">レース場へ入場する</button>
+      <br><br>
+      <button class="btn secondary small" id="btnReset">メダルをリセットする</button>
+    </div>
+    <div class="panel">
+      <h2 class="section">遊び方</h2>
+      <p class="small-note">
+        毎レース12頭が出走。馬ごとの実力差ははっきりしており、単勝オッズにも大きな開きが出る。
+        レース結果はオッズ(実力)に応じた抽選で決まるため、人気馬が勝ちやすい一方で、人気薄が勝つ大波乱も起こり得る。
+        逃げ・先行・差し・追込の4つの脚質は序盤の隊列(逃げ・先行は前目、差し・追込は後方)に表れ、
+        レース映像に個性を与える。単勝(1着的中)・複勝(3着以内)に加え、馬連・馬単(2頭の組み合わせ)、
+        三連複・三連単(3頭の組み合わせ)も購入可能。複数の馬を候補として選び組み合わせを自動生成する
+        「フォーメーション買い」にも対応。1メダルから賭けられ、的中すればオッズに応じた配当メダルがもらえる。
+        メダルが0枚になったらゲームオーバー、さあ大穴を当てて億り人を目指せ！
+      </p>
+    </div>
+  </div>
+
+  <!-- RACE ENTRY / ODDS BOARD -->
+  <div id="screen-entry" class="screen hidden">
+    <div class="money-bar">
+      <span>第<b id="raceNo">1</b>レース ／ <span id="raceDist">1600m</span> ／ 馬場: <span id="raceCond">良</span></span>
+      <span>所持メダル <b id="moneyEntry">10,000</b> 枚</span>
+    </div>
+    <div class="panel">
+      <h2 class="section">出走表・オッズ(単勝・複勝)</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>枠</th><th style="text-align:left;">馬名 / 騎手 / 脚質 / 短評</th><th>予想印</th><th>単勝</th><th>複勝</th></tr></thead>
+          <tbody id="horseTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section">馬券購入</h2>
+      <div id="betPanel">
+        <div>
+          <div class="small-note">式別</div>
+          <div id="betTypeChips" class="formation-chip-row" style="max-width:none;">
+            <span class="chip type-chip active" data-type="win">単勝</span>
+            <span class="chip type-chip" data-type="place">複勝</span>
+            <span class="chip type-chip" data-type="umaren">馬連</span>
+            <span class="chip type-chip" data-type="umatan">馬単</span>
+            <span class="chip type-chip" data-type="sanrenpuku">三連複</span>
+            <span class="chip type-chip" data-type="sanrentan">三連単</span>
+          </div>
+        </div>
+        <div id="horsePickers"></div>
+        <div>
+          <div class="small-note" id="amountLabel">枚数(メダル)</div>
+          <div id="amountChips">
+            <span class="chip" data-amt="1">1</span>
+            <span class="chip" data-amt="5">5</span>
+            <span class="chip" data-amt="10">10</span>
+            <span class="chip" data-amt="50">50</span>
+            <span class="chip" data-amt="100">100</span>
+            <span class="chip" data-amt="500">500</span>
+            <span class="chip" data-amt="1000">1000</span>
+            <span class="chip" data-amt="5000">5000</span>
+            <span class="chip" data-amt="10000">10000</span>
+          </div>
+          <div class="amt-row">
+            <button class="btn small secondary" id="amtMinus">-1</button>
+            <input type="number" id="betAmountInput" min="1" value="1">
+            <button class="btn small secondary" id="amtPlus">+1</button>
+            <button class="btn small secondary" id="amtAllIn">ALL-IN</button>
+          </div>
+        </div>
+        <div>
+          <div class="small-note">予想オッズ</div>
+          <div id="oddsPreview">-</div>
+        </div>
+      </div>
+      <div class="center" style="margin-top:10px;">
+        <button class="btn small" id="btnAddBet">馬券を追加</button>
+      </div>
+      <div id="betSlip" style="margin-top:10px;"></div>
+      <div class="row" style="margin-top:14px;">
+        <span class="small-note">合計購入メダル: <b id="betTotal">0</b> 枚</span>
+        <div>
+          <button class="btn secondary small" id="btnClearBets">全て取消</button>
+          <button class="btn secondary" id="btnSkipBet">見送ってレース観戦</button>
+          <button class="btn" id="btnGoRace">発走！</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RACE -->
+  <div id="screen-race" class="screen hidden">
+    <div class="money-bar">
+      <span>第<b id="raceNo2">1</b>レース ／ <span id="raceDist2">1600m</span></span>
+      <span id="raceProgressLabel">発走!</span>
+    </div>
+    <canvas id="trackCanvas" width="900" height="560"></canvas>
+    <div id="commentary">レース実況を開始します…</div>
+    <div class="center" style="margin-top:10px;">
+      <button class="btn" id="btnSkipRace">結果まで早送り</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="screen-result" class="screen hidden">
+    <div class="panel">
+      <h2 class="section">レース結果</h2>
+      <div id="resultList"></div>
+    </div>
+    <div class="panel">
+      <h2 class="section">確定オッズ(全式別)</h2>
+      <div id="fullOddsList"></div>
+    </div>
+    <div class="panel">
+      <h2 class="section">払戻</h2>
+      <div id="payoutList"></div>
+      <div class="row" style="margin-top:10px;">
+        <span>所持メダル: <b id="moneyResult" style="color:var(--gold);font-size:1.2em;">0</b> 枚</span>
+        <button class="btn" id="btnNextRace">次のレースへ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="screen-over" class="screen hidden">
+    <div class="panel center">
+      <h2 class="section">GAME OVER</h2>
+      <p>メダルが尽きました…</p>
+      <p>挑戦レース数: <b id="overRaces">0</b> ／ 歴代最高メダル: <b id="overBest">0</b> 枚</p>
+      <button class="btn" id="btnRestart">もう一度挑戦する</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Data pools ----------
+  const NAME_POOL = [
+    "ゴールドフレイム","シルバーウィンド","クリムゾンダッシュ","ミッドナイトスター",
+    "サンライズグロウ","ブレイブハート","ノーザンライト","エターナルフレア",
+    "レジェンドソニック","ヴィクトリーロード","ムーンシャドウ","スカーレットブレイズ",
+    "インペリアルダイヤ","フェザーストーム","タイタンズロア","エンプレスヴェール",
+    "サンダーボルトキング","アイスクリスタル","ドリームチェイサー","ブリリアントエース",
+    "ホライズンダッシュ","スターダストラン","カイザーウルフ","フローズンフレイム",
+    "レインボーゲイル","プラチナスピア","ミラクルジャーニー","ノヴァストリーク",
+    "オーロラウイング","バーニングソウル"
+  ];
+  const JOCKEY_POOL = [
+    "武 蔵之介","岡部 龍一","福永 洋二","武豊二","柴田 天馬","池添 翔",
+    "横山 大河","川田 隼人","戸崎 陽斗","ルメール太郎","デムーロ二世","北村 翼",
+    "疾風 一馬","黄金 龍二","静弦 陸","碧海 翔太","紅蓮 隼人","雷神 颯"
+  ];
+  const CAP_COLORS = ["#ffffff","#111111","#e53935","#1e5bd6","#f2c811","#2e9e3f","#f08a24","#e5599f","#8e44ad","#16a2b8","#b8860b","#7b2d26"];
+  const CAP_TEXT   = ["#111","#fff","#fff","#fff","#3a2a05","#fff","#3a2a05","#fff","#fff","#fff","#3a2a05","#fff"];
+  const COAT_COLORS = ["#6b4a2c","#8b5a2b","#3d2817","#c9a876","#241f1c","#5a3a1e","#9c7040","#2b2320"];
+  const NUM_HORSES = 12;
+  const DISTANCES = [
+    {m:1400,label:"1400m(短距離)",fatigue:0.80},
+    {m:1800,label:"1800m(中距離)",fatigue:0.72},
+    {m:2200,label:"2200m(中距離)",fatigue:0.64},
+    {m:2600,label:"2600m(長距離)",fatigue:0.56},
+    {m:3000,label:"3000m(長距離)",fatigue:0.48},
+    {m:3400,label:"3400m(超長距離)",fatigue:0.40}
+  ];
+  const CONDITIONS = [
+    {label:"良",mod:1.0},{label:"稍重",mod:0.96},{label:"重",mod:0.90},{label:"不良",mod:0.84}
+  ];
+
+  const BET_TYPES = {
+    win:        { label:'単勝',   n:1, ordered:false, positions:['馬番'] },
+    place:      { label:'複勝',   n:1, ordered:false, positions:['馬番'] },
+    umaren:     { label:'馬連',   n:2, ordered:false, positions:['1頭目','2頭目'] },
+    umatan:     { label:'馬単',   n:2, ordered:true,  positions:['1着','2着'] },
+    sanrenpuku: { label:'三連複', n:3, ordered:false, positions:['1頭目','2頭目','3頭目'] },
+    sanrentan:  { label:'三連単', n:3, ordered:true,  positions:['1着','2着','3着'] }
+  };
+  // These match the actual probability model used to draw the race result (see
+  // drawRaceResult / orderProb below), so long-run payback converges exactly to
+  // 100/TAKEOUT for every bet type.
+  const COMBO_TAKEOUT = { umaren:1.30, umatan:1.35, sanrenpuku:1.40, sanrentan:1.45 };
+
+  // ---------- Running styles (脚質) ----------
+  // NOTE: style no longer affects who actually wins (see the "result first,
+  // animation second" design below) - it only shapes the *visual* pacing of the
+  // replay, i.e. where a horse tends to run early in the field.
+  const STYLES = ['nige','senko','sashi','oikomi'];
+  const STYLE_INFO = {
+    nige:   { label:'逃げ', abbr:'逃', color:'#e74c3c' },
+    senko:  { label:'先行', abbr:'先', color:'#f39c12' },
+    sashi:  { label:'差し', abbr:'差', color:'#3498db' },
+    oikomi: { label:'追込', abbr:'追', color:'#9b59b6' }
+  };
+  // piecewise-linear pace multiplier curves used only for the replay animation:
+  // 逃げ/先行 jump out to the front early then fade, 差し/追込 sit back early
+  // then surge in the final stretch.
+  const STYLE_CURVES = {
+    nige:   [{p:0.0,m:1.40},{p:0.15,m:1.18},{p:0.5,m:0.90},{p:0.82,m:0.70},{p:1.0,m:0.55}],
+    senko:  [{p:0.0,m:1.12},{p:0.15,m:1.05},{p:0.5,m:1.00},{p:0.82,m:0.93},{p:1.0,m:0.88}],
+    sashi:  [{p:0.0,m:0.78},{p:0.15,m:0.85},{p:0.5,m:0.98},{p:0.82,m:1.16},{p:1.0,m:1.30}],
+    oikomi: [{p:0.0,m:0.50},{p:0.15,m:0.62},{p:0.5,m:0.88},{p:0.82,m:1.35},{p:1.0,m:1.75}]
+  };
+  function interpolateCurve(pts, progress){
+    const p = clamp(progress,0,1);
+    for(let i=0;i<pts.length-1;i++){
+      if(p>=pts[i].p && p<=pts[i+1].p){
+        const t = (p-pts[i].p)/((pts[i+1].p-pts[i].p)||1);
+        return pts[i].m + (pts[i+1].m-pts[i].m)*t;
+      }
+    }
+    return pts[pts.length-1].m;
+  }
+  function styleMultiplier(style, progress){
+    return interpolateCurve(STYLE_CURVES[style], progress);
+  }
+
+  // Build a one-off, personalized pace curve for a single horse for this
+  // race: start from its style's base shape, but jitter WHEN each speed-up/
+  // slow-down happens (breakpoint position) and HOW MUCH it swings
+  // (multiplier), then layer in 1-2 random extra swings so a horse can slow
+  // down and then speed back up again (or vice versa) independent of its
+  // style's overall trend - not just a single monotonic accel/fade. This is
+  // purely cosmetic (generateChoreography output is remapped onto the
+  // odds-drawn result afterward) so it's safe to make as unpredictable as we
+  // like without touching fairness.
+  function buildHorsePaceCurve(style){
+    const base = STYLE_CURVES[style];
+    const pts = base.map((pt,idx)=>{
+      let p = pt.p;
+      if(idx>0 && idx<base.length-1){
+        const lo = base[idx-1].p + 0.04, hi = base[idx+1].p - 0.04;
+        p = clamp(pt.p + rand(-0.09,0.09), lo, hi);
+      }
+      const m = Math.max(0.22, pt.m * rand(0.80,1.22));
+      return {p, m};
+    });
+
+    // 40-70% chance of 1-2 extra direction-flip swings scattered through the
+    // middle of the race, so a horse that's been speeding up can suddenly
+    // slow down again, or one that's been fading can find another gear.
+    const waveCount = Math.random()<0.6 ? (Math.random()<0.35 ? 2 : 1) : 0;
+    for(let w=0; w<waveCount; w++){
+      const p = rand(0.18,0.8);
+      const trend = interpolateCurve(pts, p);
+      const swing = rand(0.28,0.60) * (Math.random()<0.5 ? 1 : -1);
+      const m = Math.max(0.20, trend*(1+swing));
+      pts.push({p, m});
+    }
+
+    pts.sort((a,b)=>a.p-b.p);
+    // collapse any breakpoints that ended up too close together (avoids
+    // near-vertical kinks / divide-by-near-zero interpolation spans)
+    const cleaned = [pts[0]];
+    for(let i=1;i<pts.length;i++){
+      if(pts[i].p - cleaned[cleaned.length-1].p > 0.025){
+        cleaned.push(pts[i]);
+      }
+    }
+    cleaned[0] = { p:0, m: cleaned[0].m };
+    cleaned[cleaned.length-1] = { p:1, m: cleaned[cleaned.length-1].m };
+    return cleaned;
+  }
+
+  // Flat, stat-independent pace bonus/penalty layered on top of styleMultiplier.
+  // A weak 逃げ/先行 horse can still have a below-average speed stat, which
+  // would otherwise let a strong 差し/追込 horse out-run it even in the
+  // opening stretch and undercut the "leaders go straight to the front"
+  // look. This additive term guarantees 逃げ/先行 are visibly out in front
+  // early and 差し/追込 are visibly buried at the back early, regardless of
+  // their underlying stats; it fades to 0 by the midpoint so stats, luck and
+  // the drawn-result remap take back over for the stretch run.
+  const STYLE_EARLY_BONUS = {
+    nige:   [{p:0.0,b:0.0075},{p:0.15,b:0.0045},{p:0.35,b:0.0015},{p:0.5,b:0}],
+    senko:  [{p:0.0,b:0.0038},{p:0.15,b:0.0022},{p:0.35,b:0.0008},{p:0.5,b:0}],
+    sashi:  [{p:0.0,b:-0.0038},{p:0.15,b:-0.0022},{p:0.35,b:-0.0008},{p:0.5,b:0}],
+    oikomi: [{p:0.0,b:-0.0075},{p:0.15,b:-0.0045},{p:0.35,b:-0.0015},{p:0.5,b:0}]
+  };
+  function styleEarlyBonus(style, progress){
+    const pts = STYLE_EARLY_BONUS[style];
+    const p = clamp(progress,0,1);
+    if(p>=0.5) return 0;
+    for(let i=0;i<pts.length-1;i++){
+      if(p>=pts[i].p && p<=pts[i+1].p){
+        const t = (p-pts[i].p)/((pts[i+1].p-pts[i].p)||1);
+        return pts[i].b + (pts[i+1].b-pts[i].b)*t;
+      }
+    }
+    return 0;
+  }
+
+  // ---------- Prediction marks (予想印) ----------
+  // Numeric stats are intentionally not shown to the player, so a tipster-style
+  // mark and short comment are shown instead. The mark order is based on the
+  // horse's underlying quality but scrambled with independent randomness, so it
+  // is a hint - not a reliable readout - of who will actually win.
+  const MARKS = [
+    { symbol:'◎', color:'#ff5252' },
+    { symbol:'○', color:'#4aa3ff' },
+    { symbol:'▲', color:'#4ade80' },
+    { symbol:'△', color:'#f1c40f' },
+    { symbol:'△', color:'#f1c40f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' },
+    { symbol:'－', color:'#8a9a8f' }
+  ];
+  const STYLE_COMMENTS = {
+    nige:   ["ハイペースで逃げ切り濃厚","マイペースに持ち込めれば粘り込み十分","前々の積極的な位置取りに期待"],
+    senko:  ["好位から立ち回りの上手さが光る","仕掛けどころ次第で上位争いも","流れに乗れれば怖い存在"],
+    sashi:  ["直線一気の脚に注目したい","展開待ちだが末脚は魅力十分","中団でじっくり脚を溜めるタイプ"],
+    oikomi: ["最後方から豪脚一閃なるか","終盤の伸びは侮れない","展開がハマれば一撃のポテンシャル"]
+  };
+  function assignPredictions(horses){
+    // independent noise from the odds calculation, so the mark order can disagree with the odds
+    const scored = horses.map(h=>({h, score: h.strength*rand(0.7,1.3)}));
+    scored.sort((a,b)=>b.score-a.score);
+    scored.forEach((x,rank)=>{
+      const mark = MARKS[Math.min(rank, MARKS.length-1)];
+      x.h.markSymbol = mark.symbol;
+      x.h.markColor = mark.color;
+      const pool = STYLE_COMMENTS[x.h.style];
+      x.h.comment = pool[randInt(0,pool.length-1)];
+    });
+  }
+
+  const STARTING_MONEY = 10000;
+
+  // ---------- State ----------
+  let state = {
+    money: STARTING_MONEY,
+    best: STARTING_MONEY,
+    raceNumber: 1,
+    horses: [],
+    distance: DISTANCES[1],
+    condition: CONDITIONS[0],
+    bets: [],       // {type, horseIds, ordered, amount, odds, label}
+    lastResult: null
+  };
+
+  function loadState(){
+    try{
+      const m = localStorage.getItem('dd4_money');
+      const b = localStorage.getItem('dd4_best');
+      const r = localStorage.getItem('dd4_race');
+      if(m!==null){ state.money = parseInt(m,10); }
+      if(b!==null){ state.best = parseInt(b,10); }
+      if(r!==null){ state.raceNumber = parseInt(r,10); }
+    }catch(e){}
+  }
+  function saveState(){
+    try{
+      localStorage.setItem('dd4_money', state.money);
+      localStorage.setItem('dd4_best', state.best);
+      localStorage.setItem('dd4_race', state.raceNumber);
+    }catch(e){}
+  }
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+  function randInt(min,max){ return Math.floor(rand(min,max+1)); }
+  function pickN(arr,n){
+    const copy = arr.slice();
+    const out = [];
+    for(let i=0;i<n;i++){
+      const idx = randInt(0,copy.length-1);
+      out.push(copy[idx]);
+      copy.splice(idx,1);
+    }
+    return out;
+  }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = randInt(0,i);
+      const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function fmt(n){ return Math.round(n).toLocaleString('ja-JP'); }
+  function formatOdds(o){
+    if(o>=1000) return Math.round(o).toLocaleString('ja-JP');
+    return o.toFixed(1);
+  }
+
+  // ---------- Race generation ----------
+  function generateHorses(){
+    const names = pickN(NAME_POOL, NUM_HORSES);
+    const jockeys = pickN(JOCKEY_POOL, NUM_HORSES);
+    const classBoost = clamp((state.raceNumber-1)*0.6, 0, 12); // slow progression
+    // guarantee an even 3/3/3/3 style split so the field always has a natural pace shape
+    const perStyle = NUM_HORSES/STYLES.length;
+    let styleAssign = [];
+    STYLES.forEach(s=>{ for(let k=0;k<perStyle;k++) styleAssign.push(s); });
+    styleAssign = shuffle(styleAssign);
+
+    const horses = names.map((name,i)=>{
+      // wide stat spread on purpose: some horses are clear standouts, some are also-rans
+      const speed   = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
+      const stamina = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
+      const guts    = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
+      const luck    = randInt(5,95);
+      return {
+        id:i+1,
+        name,
+        jockey:jockeys[i],
+        color:CAP_COLORS[i],
+        textColor:CAP_TEXT[i],
+        coatColor: COAT_COLORS[randInt(0,COAT_COLORS.length-1)],
+        style: styleAssign[i],
+        speed,stamina,guts,luck,
+        strength: speed*0.35+stamina*0.25+guts*0.25+luck*0.15
+      };
+    });
+    return horses;
+  }
+
+  // ---------- Odds (Harville / Plackett-Luce model) ----------
+  // winProb is the number actually used to draw the race result further down,
+  // so displayed odds and real outcome probability always agree exactly.
+  function getHorseProb(id){
+    const h = state.horses.find(x=>x.id===id);
+    return h ? h.winProb : 0;
+  }
+  function orderProb(ids){
+    let usedP = 0, result = 1;
+    for(const id of ids){
+      const p = getHorseProb(id);
+      const denom = Math.max(1-usedP, 1e-9);
+      result *= p/denom;
+      usedP += p;
+    }
+    return result;
+  }
+  function permute(arr){
+    if(arr.length<=1) return [arr.slice()];
+    const res = [];
+    arr.forEach((x,i)=>{
+      const rest = arr.slice(0,i).concat(arr.slice(i+1));
+      permute(rest).forEach(p=>res.push([x].concat(p)));
+    });
+    return res;
+  }
+  function comboProbability(ids, ordered){
+    if(ordered) return orderProb(ids);
+    return permute(ids).reduce((sum,p)=>sum+orderProb(p),0);
+  }
+  function comboOdds(type, ids){
+    const info = BET_TYPES[type];
+    const prob = Math.max(comboProbability(ids, info.ordered), 1e-9);
+    return clamp(1/(prob*COMBO_TAKEOUT[type]), 1.05, 999999);
+  }
+
+  function assignOdds(horses){
+    // add noise so the odds aren't a perfectly transparent readout of the raw stats.
+    // Strength is raised to a power before turning it into a probability share:
+    // this steepens the odds slope so a standout horse's edge compounds into a
+    // real gap in win probability (rather than a mild one), letting the market
+    // favorite land in 1.x-倍 territory in a real race generated by the field.
+    const STRENGTH_EXPONENT = 6;
+    const noisy = horses.map(h=>({h, s: Math.pow(Math.max(1,h.strength*rand(0.8,1.2)), STRENGTH_EXPONENT)}));
+    const total = noisy.reduce((a,x)=>a+x.s,0);
+    const WIN_TAKEOUT = 1.25; // ~80% theoretical payback
+    noisy.forEach(x=>{
+      const prob = (x.s/total);
+      x.h.winProb = prob;
+      const odds = clamp(1/(prob*WIN_TAKEOUT), 1.1, 999);
+      x.h.winOdds = Math.round(odds*10)/10;
+    });
+    horses.sort((a,b)=>a.id-b.id);
+
+    // exact P(finish top-3) via the same Harville model, used for 複勝 odds
+    const PLACE_TAKEOUT = 1.25;
+    horses.forEach(h=>{
+      let p = h.winProb;
+      const others = horses.filter(x=>x!==h);
+      others.forEach(j=>{ p += orderProb([j.id, h.id]); });
+      for(let a=0;a<others.length;a++){
+        for(let b=0;b<others.length;b++){
+          if(a===b) continue;
+          p += orderProb([others[a].id, others[b].id, h.id]);
+        }
+      }
+      const placeOdds = clamp(1/(p*PLACE_TAKEOUT), 1.05, 60);
+      h.placeOdds = Math.round(placeOdds*10)/10;
+    });
+  }
+
+  // ---------- Actual race result: drawn directly from the odds ----------
+  // Sequential weighted draw (Plackett-Luce / Harville model): pick the winner
+  // weighted by winProb, remove it, pick 2nd from the rest weighted by their
+  // remaining winProb, and so on. This is the exact same model the combo odds
+  // above are computed from, so long-run payout always matches the posted odds -
+  // and a longshot can, and sometimes will, win.
+  function drawRaceResult(horses){
+    let pool = horses.slice();
+    const order = [];
+    while(pool.length){
+      const totalW = pool.reduce((a,h)=>a+h.winProb,0);
+      let r = Math.random()*totalW;
+      let idx = pool.length-1;
+      for(let i=0;i<pool.length;i++){
+        r -= pool[i].winProb;
+        if(r<=1e-9){ idx = i; break; }
+      }
+      order.push(pool[idx]);
+      pool.splice(idx,1);
+    }
+    return order;
+  }
+
+  function newRace(){
+    state.horses = generateHorses();
+    assignOdds(state.horses);
+    assignPredictions(state.horses);
+    state.distance = DISTANCES[randInt(0,DISTANCES.length-1)];
+    state.condition = CONDITIONS[randInt(0,CONDITIONS.length-1)];
+    state.bets = [];
+    state.lastResult = null;
+  }
+
+  // ---------- Replay choreography ----------
+  // A physics-flavoured pass purely to make a natural-looking animation: each
+  // horse paces according to its own stats + running style. Its raw finish
+  // order is NOT the game result (that's drawRaceResult, above) - it's only
+  // used as a timing template that gets remapped onto the real result below,
+  // so the animation still looks organic (leaders fading, closers surging)
+  // while ending in the outcome that was actually drawn.
+  function generateChoreography(){
+    const horses = state.horses;
+    const fatigueThreshold = state.distance.fatigue;
+    const condMod = state.condition.mod;
+    const N = horses.length;
+    const progress = new Array(N).fill(0);
+    const history = horses.map(()=>[0]);
+    const finishFrame = new Array(N).fill(null);
+    const kickTimer = new Array(N).fill(0);
+    // each horse gets its own randomized pace curve for this race (timing of
+    // speed-ups/slow-downs, and how many times it changes direction, both vary)
+    const paceCurves = horses.map(h=>buildHorsePaceCurve(h.style));
+
+    let frame = 0;
+    // High enough that essentially every horse actually reaches progress=1
+    // (a slow, unlucky, style-suppressed-early horse can need 1000+ frames);
+    // the displayed broadcast is cut short separately via top3Frame, so this
+    // only affects how much underlying data is generated, not race length.
+    const MAX_FRAMES = 1600;
+    let finishedCount = 0;
+
+    while(frame < MAX_FRAMES && finishedCount < N){
+      frame++;
+      for(let i=0;i<N;i++){
+        if(finishFrame[i]!==null){ history[i].push(1); continue; }
+        const h = horses[i];
+        let base = (h.speed/100) * 0.0125 * condMod;
+
+        base *= interpolateCurve(paceCurves[i], progress[i]);
+        // stat-independent nudge so 逃げ/先行 are reliably near the front
+        // early and 差し/追込 reliably buried at the back early, regardless
+        // of how their speed/stamina rolls happened to come out
+        base += styleEarlyBonus(h.style, progress[i]);
+        base = Math.max(base, 0.0002);
+
+        if(progress[i] > fatigueThreshold){
+          const over = (progress[i]-fatigueThreshold)/(1-fatigueThreshold+0.0001);
+          const staminaFactor = 0.65 + 0.35*(h.stamina/100);
+          base *= (1 - over*(1-staminaFactor)*0.30);
+        }
+        if(progress[i] > 0.78 && progress[i] < 0.97 && kickTimer[i]<=0){
+          const roll = Math.random()*100;
+          if(roll < h.guts*0.18){
+            kickTimer[i] = randInt(8,18);
+          }
+        }
+        if(kickTimer[i] > 0){
+          base *= 1.35;
+          kickTimer[i]--;
+        }
+        const luckBias = (h.luck-50)/50 * 0.08;
+        const noise = rand(-0.14,0.14) + luckBias;
+        base *= (1+noise);
+        base = Math.max(base, 0.0008);
+
+        progress[i] = clamp(progress[i]+base, 0, 1.05);
+        history[i].push(Math.min(progress[i],1));
+        if(progress[i] >= 1 && finishFrame[i]===null){
+          finishFrame[i] = frame;
+          finishedCount++;
+        }
+      }
+    }
+    for(let i=0;i<N;i++){
+      if(finishFrame[i]===null){ finishFrame[i] = MAX_FRAMES + (1-progress[i])*100; }
+    }
+    return {history, finishFrame, totalFrames: frame};
+  }
+
+  // Remap each horse's own natural pacing curve onto the timing slot implied
+  // by its ACTUAL drawn finishing position. Rather than one flat stretch
+  // factor for the whole race (which would speed up or slow down a horse's
+  // *entire* run uniformly, blurring away any "buried at the back, then
+  // storms home" shape), each horse gets a two-segment remap: the portion up
+  // to its own natural kick point (~60% progress) plays back at close to its
+  // true pace, so a closer genuinely looks stuck mid-pack/at the back for
+  // that stretch; only the closing sprint afterward is stretched/compressed
+  // so it lands exactly on the drawn finishing frame. This lets a horse that
+  // was near last for most of the race still convincingly win.
+  function computeRemapScale(choreo, drawnOrder, horses){
+    const sortedFrames = choreo.finishFrame.slice().sort((a,b)=>a-b);
+
+    // Force a dramatic finish: bunch up the top few finishing slots so the
+    // race for the win is a photo finish, no matter how spread out the
+    // underlying choreography naturally was. The winner (rank 0) edges out
+    // 2nd by just a hair; 3rd trails close behind that.
+    const PHOTO_FINISH_COUNT = Math.min(3, sortedFrames.length);
+    for(let rank=PHOTO_FINISH_COUNT-2; rank>=0; rank--){
+      const gap = rank===0 ? randInt(1,3) : randInt(2,6);
+      sortedFrames[rank] = Math.max(1, sortedFrames[rank+1] - gap);
+    }
+
+    const KICK_PROGRESS = 0.6; // "still buried in the pack" reference point
+    const remaps = horses.map((h,i)=>{
+      const rank = drawnOrder.findIndex(x=>x.id===h.id);
+      const targetFinish = Math.max(sortedFrames[rank], 1);
+      const rawFinish = Math.max(choreo.finishFrame[i], 1);
+
+      // find the raw frame at which this horse's own choreography first
+      // reaches the kick-point progress
+      const hist = choreo.history[i];
+      let rawKick = rawFinish; // fallback: no distinct kick point found
+      for(let f=0; f<hist.length; f++){
+        if(hist[f] >= KICK_PROGRESS){ rawKick = f; break; }
+      }
+      rawKick = Math.min(rawKick, rawFinish);
+
+      // pick a display-frame split point close to the natural kick frame,
+      // but leave at least 15% of the target timeline for the late surge
+      let splitTarget = Math.min(rawKick, targetFinish*0.85);
+      splitTarget = Math.max(splitTarget, 1);
+      if(splitTarget >= targetFinish) splitTarget = Math.max(1, targetFinish-1);
+
+      const earlySlope = rawKick / splitTarget; // ~1 = natural early pacing preserved
+      const lateSpan = Math.max(targetFinish - splitTarget, 1);
+      const lateSlope = (rawFinish - rawKick) / lateSpan;
+
+      return { splitTarget, earlySlope, rawKick, lateSlope };
+    });
+
+    // The frame at which the 3rd-place finisher crosses the line (top-3 are
+    // guaranteed to have crossed by this point thanks to the photo-finish
+    // compression above). Used so the broadcast can cut away once the
+    // placings that matter for payouts are settled, instead of waiting for
+    // the whole field to trickle across the line.
+    const top3Frame = sortedFrames[Math.min(2, sortedFrames.length-1)];
+
+    return { remaps, top3Frame };
+  }
+
+  // Convert a shared "display" frame index into horse i's own raw choreography
+  // frame index, using its two-segment remap.
+  function mapDisplayFrame(remap, frameIdx){
+    if(frameIdx <= remap.splitTarget){
+      return frameIdx * remap.earlySlope;
+    }
+    return remap.rawKick + (frameIdx - remap.splitTarget) * remap.lateSlope;
+  }
+
+  // ---------- Rendering: Title / common ----------
+  const $ = sel => document.querySelector(sel);
+  const screens = {
+    title: $('#screen-title'), entry: $('#screen-entry'),
+    race: $('#screen-race'), result: $('#screen-result'), over: $('#screen-over')
+  };
+  function showScreen(name){
+    Object.values(screens).forEach(s=>s.classList.add('hidden'));
+    screens[name].classList.remove('hidden');
+  }
+
+  function refreshMoneyDisplays(){
+    $('#titleMoney').textContent = fmt(state.money);
+    $('#titleBest').textContent = fmt(state.best);
+    $('#moneyEntry').textContent = fmt(state.money);
+  }
+
+  // ---------- Entry screen ----------
+  function renderEntry(){
+    $('#raceNo').textContent = state.raceNumber;
+    $('#raceNo2').textContent = state.raceNumber;
+    $('#raceDist').textContent = state.distance.label;
+    $('#raceDist2').textContent = state.distance.label;
+    $('#raceCond').textContent = state.condition.label;
+    refreshMoneyDisplays();
+
+    const tbody = $('#horseTableBody');
+    tbody.innerHTML = '';
+
+    state.horses.forEach(h=>{
+      const si = STYLE_INFO[h.style];
+      const tr = document.createElement('tr');
+      tr.className = 'horse-row';
+      tr.innerHTML = `
+        <td><span class="cap" style="background:${h.color};color:${h.textColor};">${h.id}</span></td>
+        <td style="text-align:left;">
+          <div>${h.name} <span class="style-badge" style="background:${si.color};">${si.label}</span></div>
+          <div class="small-note">${h.jockey}</div>
+          <div class="horse-comment">${h.comment}</div>
+        </td>
+        <td><span class="mark-symbol" style="color:${h.markColor};">${h.markSymbol}</span></td>
+        <td>${h.winOdds.toFixed(1)}倍</td>
+        <td>${h.placeOdds.toFixed(1)}倍</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    selectedBetType = 'win';
+    document.querySelectorAll('.type-chip').forEach(c=>c.classList.toggle('active', c.dataset.type==='win'));
+    setAmount(1);
+    renderHorsePickers();
+    renderBetSlip();
+  }
+
+  // ---------- Bet type / horse pickers (chip buttons only, no dropdowns) ----------
+  // Single-horse bet types (単勝/複勝) let you tap one horse chip.
+  // Multi-horse bet types (馬連/馬単/三連複/三連単) are always フォーメーション:
+  // tap any number of candidate chips per finishing position and every valid
+  // combination is generated automatically.
+  let selectedBetType = 'win';
+  document.querySelectorAll('.type-chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('.type-chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      selectedBetType = c.dataset.type;
+      renderHorsePickers();
+    });
+  });
+
+  function renderHorsePickers(){
+    const type = selectedBetType;
+    const info = BET_TYPES[type];
+    const isFormation = info.n >= 2;
+
+    $('#amountLabel').textContent = isFormation
+      ? '枚数(1組み合わせあたり・メダル)'
+      : '枚数(メダル)';
+
+    const container = $('#horsePickers');
+    container.innerHTML = '';
+
+    for(let i=0;i<info.n;i++){
+      const wrap = document.createElement('div');
+      const lab = document.createElement('div');
+      lab.className = 'small-note';
+      lab.textContent = isFormation ? (info.positions[i] + '候補(複数可)') : info.positions[i];
+      const row = document.createElement('div');
+      row.className = 'formation-chip-row' + (isFormation ? '' : ' single-pick-row');
+      state.horses.forEach((h,hi)=>{
+        const c = document.createElement('span');
+        c.className = 'chip formation-chip';
+        c.dataset.horse = h.id;
+        c.textContent = h.id;
+        c.addEventListener('click', ()=>{
+          if(isFormation){
+            c.classList.toggle('active');
+          } else {
+            row.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+            c.classList.add('active');
+          }
+          updateOddsPreview();
+        });
+        if(!isFormation && hi===0){ c.classList.add('active'); } // default: first horse selected
+        row.appendChild(c);
+      });
+      wrap.appendChild(lab);
+      wrap.appendChild(row);
+      container.appendChild(wrap);
+    }
+    updateOddsPreview();
+  }
+
+  function getSelectedHorseIds(){
+    return Array.from(document.querySelectorAll('.single-pick-row')).map(row=>{
+      const active = row.querySelector('.chip.active');
+      return active ? parseInt(active.dataset.horse,10) : null;
+    }).filter(id=>id!==null);
+  }
+  function getFormationSets(){
+    return Array.from(document.querySelectorAll('#horsePickers .formation-chip-row')).map(row=>
+      Array.from(row.querySelectorAll('.formation-chip.active')).map(c=>parseInt(c.dataset.horse,10))
+    );
+  }
+  function buildFormationCombos(sets, ordered){
+    let results = [];
+    (function rec(idx, current){
+      if(idx===sets.length){ results.push(current.slice()); return; }
+      for(const id of sets[idx]){
+        if(current.includes(id)) continue; // a horse can't occupy two positions at once
+        current.push(id);
+        rec(idx+1, current);
+        current.pop();
+      }
+    })(0, []);
+    if(!ordered){
+      const seen = new Set();
+      const deduped = [];
+      results.forEach(combo=>{
+        const sorted = combo.slice().sort((a,b)=>a-b);
+        const key = sorted.join(',');
+        if(!seen.has(key)){ seen.add(key); deduped.push(sorted); }
+      });
+      results = deduped;
+    }
+    return results;
+  }
+
+  function updateOddsPreview(){
+    const type = selectedBetType;
+    const info = BET_TYPES[type];
+    const preview = $('#oddsPreview');
+
+    if(info.n>=2){
+      const sets = getFormationSets();
+      if(sets.some(s=>s.length===0)){
+        preview.textContent = '各着順を1頭以上選択してください';
+        preview.classList.add('invalid');
+        preview.dataset.valid = '0';
+        return;
+      }
+      const combos = buildFormationCombos(sets, info.ordered);
+      if(combos.length===0){
+        preview.textContent = '有効な組み合わせがありません';
+        preview.classList.add('invalid');
+        preview.dataset.valid = '0';
+        return;
+      }
+      preview.classList.remove('invalid');
+      preview.textContent = `組み合わせ ${combos.length}点`;
+      preview.dataset.valid = '1';
+      preview.dataset.comboCount = combos.length;
+      return;
+    }
+
+    const ids = getSelectedHorseIds();
+    if(ids.length===0){ preview.textContent='-'; return; }
+    const distinct = new Set(ids).size === ids.length;
+    if(!distinct){
+      preview.textContent = '同じ馬は選べません';
+      preview.classList.add('invalid');
+      preview.dataset.valid = '0';
+      return;
+    }
+    preview.classList.remove('invalid');
+    let odds;
+    if(type==='win'){ odds = state.horses.find(h=>h.id===ids[0]).winOdds; }
+    else if(type==='place'){ odds = state.horses.find(h=>h.id===ids[0]).placeOdds; }
+    else { odds = comboOdds(type, ids); }
+    preview.textContent = formatOdds(odds)+'倍';
+    preview.dataset.valid = '1';
+    preview.dataset.odds = odds;
+  }
+
+  // ---------- Amount controls ----------
+  let currentAmount = 1;
+  function currentBetsTotal(){ return state.bets.reduce((a,b)=>a+b.amount,0); }
+  function setAmount(v){
+    const maxAmt = Math.max(1, state.money - currentBetsTotal());
+    currentAmount = clamp(Math.round(v)||1, 1, Math.max(1,maxAmt));
+    $('#betAmountInput').value = currentAmount;
+  }
+  document.addEventListener('click', e=>{
+    if(e.target.classList.contains('chip') && e.target.dataset.amt){
+      document.querySelectorAll('#amountChips .chip').forEach(c=>c.classList.remove('active'));
+      e.target.classList.add('active');
+      setAmount(parseInt(e.target.dataset.amt,10));
+    }
+  });
+  $('#amtMinus').addEventListener('click', ()=> setAmount(currentAmount-1));
+  $('#amtPlus').addEventListener('click', ()=> setAmount(currentAmount+1));
+  $('#amtAllIn').addEventListener('click', ()=> setAmount(state.money - currentBetsTotal()));
+  $('#betAmountInput').addEventListener('change', e=> setAmount(parseInt(e.target.value,10)));
+
+  function betLabel(type, ids, isFormation){
+    const info = BET_TYPES[type];
+    const sep = info.ordered ? '→' : '-';
+    return `${info.label} ${ids.join(sep)}${isFormation?' [F]':''}`;
+  }
+
+  function renderBetSlip(){
+    const slip = $('#betSlip');
+    slip.innerHTML = '';
+    let total = 0;
+    state.bets.forEach((b,idx)=>{
+      total += b.amount;
+      const div = document.createElement('div');
+      div.className = 'betslip-item';
+      div.innerHTML = `<span>${b.label} ／ ${formatOdds(b.odds)}倍 ／ ${fmt(b.amount)}メダル</span>`;
+      const rm = document.createElement('button');
+      rm.className = 'btn small secondary';
+      rm.textContent = '取消';
+      rm.onclick = ()=>{ state.bets.splice(idx,1); renderBetSlip(); };
+      div.appendChild(rm);
+      slip.appendChild(div);
+    });
+    $('#betTotal').textContent = fmt(total);
+  }
+
+  $('#btnAddBet').addEventListener('click', ()=>{
+    const type = selectedBetType;
+    const info = BET_TYPES[type];
+    const preview = $('#oddsPreview');
+
+    if(info.n>=2){
+      if(preview.dataset.valid !== '1'){
+        alert('候補馬の選択を確認してください。');
+        return;
+      }
+      const sets = getFormationSets();
+      const combos = buildFormationCombos(sets, info.ordered);
+      const perAmount = currentAmount;
+      const totalCost = perAmount * combos.length;
+      if(currentBetsTotal() + totalCost > state.money){
+        alert(`メダルが足りません。(必要: ${fmt(totalCost)}枚 ／ ${combos.length}点)`);
+        return;
+      }
+      combos.forEach(comboIds=>{
+        const odds = comboOdds(type, comboIds);
+        state.bets.push({
+          type, horseIds: comboIds, ordered: info.ordered,
+          amount: perAmount, odds, label: betLabel(type, comboIds, true)
+        });
+      });
+      renderBetSlip();
+      return;
+    }
+
+    const ids = getSelectedHorseIds();
+    if(new Set(ids).size !== ids.length){
+      alert('同じ馬を重複して選択できません。');
+      return;
+    }
+    if(preview.dataset.valid !== '1'){
+      alert('馬の選択を確認してください。');
+      return;
+    }
+    const odds = parseFloat(preview.dataset.odds);
+    const amount = currentAmount;
+    if(!(amount >= 1)){
+      alert('1メダル以上を指定してください。');
+      return;
+    }
+    if(currentBetsTotal() + amount > state.money){
+      alert('メダルが足りません。');
+      return;
+    }
+    state.bets.push({
+      type, horseIds: ids, ordered: info.ordered,
+      amount, odds, label: betLabel(type, ids, false)
+    });
+    renderBetSlip();
+  });
+
+  $('#btnClearBets').addEventListener('click', ()=>{
+    state.bets = [];
+    renderBetSlip();
+  });
+
+  $('#btnSkipBet').addEventListener('click', ()=>{
+    state.bets = [];
+    goToRace();
+  });
+  $('#btnGoRace').addEventListener('click', goToRace);
+
+  function goToRace(){
+    showScreen('race');
+    runRacePresentation();
+  }
+
+  // ---------- Race screen ----------
+  const canvas = $('#trackCanvas');
+  const ctx = canvas.getContext('2d');
+  let raceAnim = null;
+
+  // frameIdx may be fractional; interpolate between adjacent recorded steps for smooth motion
+  function sampleProgress(arr, frameIdx){
+    if(arr.length===0) return 0;
+    const f = clamp(frameIdx, 0, arr.length-1);
+    const i0 = Math.floor(f), i1 = Math.min(i0+1, arr.length-1);
+    const frac = f - i0;
+    const v0 = arr[i0] || 0, v1 = arr[i1] || 0;
+    return v0 + (v1-v0)*frac;
+  }
+
+  // ---- cached background texture (built once, reused every frame to avoid flicker) ----
+  let trackTextureCache = null; // {canvas, W, H, laneCount, marginTop, marginBottom, startX, finishX}
+  function getTrackTexture(W, H, laneCount){
+    const c = trackTextureCache;
+    if(c && c.W===W && c.H===H && c.laneCount===laneCount) return c;
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const tctx = off.getContext('2d');
+
+    const marginTop = 34, marginBottom = 26;
+    const startX = 50, finishX = W-60;
+    const trackTop = marginTop, trackBottom = H-marginBottom;
+    const laneH = (trackBottom-trackTop)/laneCount;
+
+    // sky
+    const skyH = marginTop;
+    const skyGrad = tctx.createLinearGradient(0,0,0,skyH);
+    skyGrad.addColorStop(0,'#8fc6f0'); skyGrad.addColorStop(1,'#cfe9f7');
+    tctx.fillStyle = skyGrad;
+    tctx.fillRect(0,0,W,skyH);
+    // clouds
+    tctx.fillStyle = 'rgba(255,255,255,.8)';
+    const cloudSeeds = [[60,10,18],[140,16,14],[320,8,20],[520,14,16],[700,9,22],[800,17,13]];
+    cloudSeeds.forEach(([cx,cy,r])=>{
+      tctx.beginPath();
+      tctx.ellipse(cx,cy,r,r*0.55,0,0,Math.PI*2);
+      tctx.ellipse(cx+r*0.7,cy+2,r*0.7,r*0.4,0,0,Math.PI*2);
+      tctx.ellipse(cx-r*0.6,cy+3,r*0.55,r*0.35,0,0,Math.PI*2);
+      tctx.fill();
+    });
+    // grandstand silhouette strip just above track
+    const standH = 10;
+    tctx.fillStyle = '#5b6b78';
+    tctx.fillRect(0, skyH-standH, W, standH);
+    tctx.fillStyle = '#3f4d59';
+    for(let x=0; x<W; x+=6){
+      tctx.fillRect(x, skyH-standH-2, 4, 2);
+    }
+    // crowd dots
+    const crowdColors = ['#e8b98a','#d9a06a','#f0d0a8','#c98a5a','#fff','#333'];
+    let seed = 42;
+    function rnd(){ seed = (seed*1103515245+12345) & 0x7fffffff; return (seed/0x7fffffff); }
+    for(let x=2; x<W-2; x+=4){
+      if(rnd()<0.85){
+        tctx.fillStyle = crowdColors[Math.floor(rnd()*crowdColors.length)];
+        tctx.fillRect(x, skyH-standH-2+ (rnd()*2), 2, 2);
+      }
+    }
+
+    // grass border above/below track
+    const grassGrad = tctx.createLinearGradient(0,skyH,0,H);
+    grassGrad.addColorStop(0,'#2f8f4e'); grassGrad.addColorStop(1,'#1d6a37');
+    tctx.fillStyle = grassGrad;
+    tctx.fillRect(0, skyH, W, H-skyH);
+
+    // dirt track surface
+    const dirtGrad = tctx.createLinearGradient(0,trackTop,0,trackBottom);
+    dirtGrad.addColorStop(0,'#b8875a'); dirtGrad.addColorStop(0.5,'#a4744a'); dirtGrad.addColorStop(1,'#8f6440');
+    tctx.fillStyle = dirtGrad;
+    tctx.fillRect(0, trackTop, W, trackBottom-trackTop);
+
+    // dirt speckle texture (generated once, cached)
+    for(let i=0;i<900;i++){
+      const x = rnd()*W, y = trackTop + rnd()*(trackBottom-trackTop);
+      const shade = rnd()<0.5 ? 'rgba(0,0,0,.06)' : 'rgba(255,255,255,.07)';
+      tctx.fillStyle = shade;
+      tctx.fillRect(x,y, 1+rnd()*2, 1+rnd()*2);
+    }
+
+    // lane separator lines
+    tctx.strokeStyle = 'rgba(255,255,255,.15)';
+    tctx.lineWidth = 1;
+    for(let i=1;i<laneCount;i++){
+      const y = trackTop + i*laneH;
+      tctx.beginPath(); tctx.moveTo(startX-14,y); tctx.lineTo(finishX+14,y); tctx.stroke();
+    }
+
+    // white rails top & bottom with posts
+    tctx.strokeStyle = '#f4f4f4'; tctx.lineWidth = 3;
+    tctx.beginPath(); tctx.moveTo(startX-16,trackTop); tctx.lineTo(finishX+30,trackTop); tctx.stroke();
+    tctx.beginPath(); tctx.moveTo(startX-16,trackBottom); tctx.lineTo(finishX+30,trackBottom); tctx.stroke();
+    tctx.fillStyle = '#d8d8d8';
+    for(let x=startX-16; x<finishX+30; x+=26){
+      tctx.fillRect(x,trackTop-2,2,6);
+      tctx.fillRect(x,trackBottom-4,2,6);
+    }
+
+    // start line
+    tctx.strokeStyle = 'rgba(255,255,255,.9)'; tctx.lineWidth=2;
+    tctx.beginPath(); tctx.moveTo(startX,trackTop); tctx.lineTo(startX,trackBottom); tctx.stroke();
+
+    // finish line checkered
+    const checkRows = laneCount*2;
+    for(let i=0;i<checkRows;i++){
+      tctx.fillStyle = (i%2===0)?'#fff':'#111';
+      tctx.fillRect(finishX, trackTop + i*((trackBottom-trackTop)/checkRows), 8, (trackBottom-trackTop)/checkRows);
+    }
+    tctx.fillStyle = 'rgba(255,255,255,.9)';
+    tctx.font = 'bold 11px sans-serif';
+    tctx.textAlign = 'center';
+    tctx.fillText('GOAL', finishX+4, trackTop-8);
+
+    const result = { canvas: off, W, H, laneCount, marginTop, marginBottom, startX, finishX, laneH, trackTop, trackBottom };
+    trackTextureCache = result;
+    return result;
+  }
+
+  // dust puff trail per horse (small ring buffer of recent positions)
+  let dustTrails = null;
+  function ensureDustTrails(n){
+    if(!dustTrails || dustTrails.length!==n) dustTrails = Array.from({length:n},()=>[]);
+    return dustTrails;
+  }
+
+  function drawHorseFigure(x, y, h, phase, moving){
+    // phase drives a galloping leg/tail cycle
+    const s = Math.sin(phase), s2 = Math.sin(phase+Math.PI);
+    const bodyLen = 15, bodyH = 6.5;
+
+    ctx.save();
+    ctx.translate(x,y);
+
+    // shadow
+    ctx.beginPath();
+    ctx.ellipse(0, bodyH+3, bodyLen*0.7, 2.2, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,.25)';
+    ctx.fill();
+
+    // back legs (near tail, x negative)
+    ctx.strokeStyle = h.coatColor || '#6b4a2c';
+    ctx.lineWidth = 2.4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-bodyLen*0.55, 1); ctx.lineTo(-bodyLen*0.55 + s*4, 8+Math.max(0,s)*1.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-bodyLen*0.35, 1); ctx.lineTo(-bodyLen*0.35 + s2*4, 8+Math.max(0,s2)*1.5); ctx.stroke();
+    // front legs (near head, x positive)
+    ctx.beginPath(); ctx.moveTo(bodyLen*0.35, 1); ctx.lineTo(bodyLen*0.35 + s2*4, 8+Math.max(0,s2)*1.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bodyLen*0.55, 1); ctx.lineTo(bodyLen*0.55 + s*4, 8+Math.max(0,s)*1.5); ctx.stroke();
+
+    // tail
+    const tailWave = Math.sin(phase*0.8)*3;
+    ctx.beginPath();
+    ctx.moveTo(-bodyLen*0.62, -1);
+    ctx.quadraticCurveTo(-bodyLen*0.9, 2+tailWave, -bodyLen*0.85, 8+tailWave);
+    ctx.strokeStyle = h.coatColor || '#6b4a2c';
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+
+    // body
+    ctx.beginPath();
+    ctx.ellipse(0, 0, bodyLen*0.62, bodyH*0.62, 0, 0, Math.PI*2);
+    ctx.fillStyle = h.coatColor || '#6b4a2c';
+    ctx.fill();
+
+    // neck + head
+    ctx.beginPath();
+    ctx.moveTo(bodyLen*0.45,-2);
+    ctx.quadraticCurveTo(bodyLen*0.75,-9, bodyLen*0.95,-8);
+    ctx.lineTo(bodyLen*1.05,-4);
+    ctx.quadraticCurveTo(bodyLen*0.85,-3, bodyLen*0.55,3);
+    ctx.closePath();
+    ctx.fillStyle = h.coatColor || '#6b4a2c';
+    ctx.fill();
+
+    // jockey silk (torso) on back
+    ctx.beginPath();
+    ctx.ellipse(-1, -6, 4.2, 5, 0, 0, Math.PI*2);
+    ctx.fillStyle = h.color;
+    ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=0.7; ctx.stroke();
+    // jockey head
+    ctx.beginPath();
+    ctx.arc(0, -11.5, 2.6, 0, Math.PI*2);
+    ctx.fillStyle = '#e8b98a';
+    ctx.fill();
+    // cap
+    ctx.beginPath();
+    ctx.arc(0, -12.5, 2.7, Math.PI, Math.PI*2);
+    ctx.fillStyle = h.color;
+    ctx.fill();
+
+    // number on silk
+    ctx.fillStyle = h.textColor;
+    ctx.font = 'bold 6px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(h.id, -1, -6);
+
+    ctx.restore();
+  }
+
+  function drawTrack(sim, frameIdx, horses){
+    const W = canvas.width, H = canvas.height;
+    const tex = getTrackTexture(W, H, horses.length);
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(tex.canvas, 0, 0);
+
+    const { laneH, trackTop, startX, finishX } = tex;
+    const trails = ensureDustTrails(horses.length);
+
+    // order horses by current progress so we can draw back-to-front with a slight overlap feel
+    const withPos = horses.map((h,i)=>{
+      const rawFrame = mapDisplayFrame(sim.remaps[i], frameIdx);
+      const p = sampleProgress(sim.history[i], rawFrame);
+      return { h, i, p };
+    });
+
+    withPos.forEach(({h,i,p})=>{
+      const x = startX + p*(finishX-startX);
+      const y = trackTop + i*laneH + laneH/2;
+      const effFrame = mapDisplayFrame(sim.remaps[i], frameIdx);
+      const speed = clamp((sampleProgress(sim.history[i], effFrame+1) - sampleProgress(sim.history[i], Math.max(0,effFrame-1)))*60, 0, 3);
+      const moving = speed>0.02;
+
+      // update dust trail
+      const tr = trails[i];
+      if(moving && p<0.995){
+        tr.push({x: x-11, y: y+6, life: 1});
+      }
+      for(let k=tr.length-1;k>=0;k--){
+        tr[k].life -= 0.045;
+        if(tr[k].life<=0) tr.splice(k,1);
+      }
+      tr.forEach(d=>{
+        ctx.beginPath();
+        ctx.ellipse(d.x - (1-d.life)*6, d.y + (1-d.life)*1.5, 3+(1-d.life)*4, 2+(1-d.life)*2, 0, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(210,180,140,${0.28*d.life})`;
+        ctx.fill();
+      });
+
+      const phase = effFrame*0.9 + i*1.7;
+      drawHorseFigure(x, y, h, phase, moving);
+
+      // number tag to the left, small
+      ctx.fillStyle = 'rgba(0,0,0,.55)';
+      ctx.fillRect(x-27, y-6, 13, 11);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 8px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(h.id, x-20.5, y);
+    });
+  }
+
+  const COMMENTARY_STAGES = [
+    {p:0.02,text:"ゲートが開いた！各馬一斉にスタート！"},
+    {p:0.3, text:"隊列が決まってきた。先頭集団が抜け出す構え。"},
+    {p:0.55,text:"レースは中盤、各馬まだ余力を残している様子。"},
+    {p:0.75,text:"第4コーナーを回って、そろそろ勝負どころだ！"},
+    {p:0.9, text:"直線勝負！差し・追込勢が一気に押し寄せる！"},
+    {p:0.99,text:"ゴール前は大接戦だ―！"}
+  ];
+
+  function runRacePresentation(){
+    dustTrails = null; // reset dust trails for the new race
+    // 1)決定: 結果はオッズ(勝率)に基づく重み付き抽選で先に決める
+    const drawnOrder = drawRaceResult(state.horses);
+    // 2) 演出: 脚質に基づく自然なペース配分のアニメーションを別途生成し、
+    //    タイミングだけ実際の結果に合わせてリマップする
+    const choreo = generateChoreography();
+    const { remaps, top3Frame } = computeRemapScale(choreo, drawnOrder, state.horses);
+    const sim = { order: drawnOrder, history: choreo.history, remaps, totalFrames: choreo.totalFrames };
+    state.lastResult = sim;
+
+    const horses = state.horses;
+    // Stop the broadcast once the placings that matter (1-2-3着) are settled,
+    // instead of waiting for the whole field to trickle across the line. A
+    // short buffer after top3Frame lets the photo finish fully land on screen.
+    const lastIdx = clamp(top3Frame + 14, 1, sim.totalFrames-1);
+    // scale broadcast duration with distance so longer races feel longer (~17s - 23s, centered on 20s)
+    const distRatio = (state.distance.m-1400)/(3400-1400); // 0..1
+    const DURATION_MS = 17000 + distRatio*6000;
+    let stageIdx = 0;
+    let startTime = null;
+    const commentaryEl = $('#commentary');
+    commentaryEl.textContent = "スタート地点に各馬が集まっています…";
+    $('#raceProgressLabel').textContent = '発走!';
+
+    function step(ts){
+      if(!raceAnim) return;
+      if(startTime===null) startTime = ts;
+      const elapsed = ts - startTime;
+      const t = clamp(elapsed/DURATION_MS, 0, 1);
+      const frameIdx = t*lastIdx;
+
+      if(t >= 1){
+        drawTrack(sim, lastIdx, horses);
+        finishRace(sim);
+        return;
+      }
+      drawTrack(sim, frameIdx, horses);
+      if(stageIdx < COMMENTARY_STAGES.length && t >= COMMENTARY_STAGES[stageIdx].p){
+        commentaryEl.textContent = COMMENTARY_STAGES[stageIdx].text;
+        stageIdx++;
+      }
+      raceAnim = requestAnimationFrame(step);
+    }
+    raceAnim = requestAnimationFrame(step);
+
+    $('#btnSkipRace').onclick = ()=>{
+      cancelAnimationFrame(raceAnim);
+      raceAnim = null;
+      drawTrack(sim, lastIdx, horses);
+      finishRace(sim);
+    };
+  }
+
+  function finishRace(sim){
+    if(raceAnim){ cancelAnimationFrame(raceAnim); raceAnim = null; }
+    $('#commentary').textContent = `ゴール！ 1着は ${sim.order[0].id}番 ${sim.order[0].name}！`;
+    $('#raceProgressLabel').textContent = 'ゴール！';
+    setTimeout(()=>{ showResult(sim); }, 900);
+  }
+
+  // ---------- Result / payout ----------
+  function isHit(bet, top3Ids){
+    switch(bet.type){
+      case 'win': return top3Ids[0]===bet.horseIds[0];
+      case 'place': return top3Ids.includes(bet.horseIds[0]);
+      case 'umaren': {
+        const s = new Set(top3Ids.slice(0,2));
+        return bet.horseIds.length===2 && bet.horseIds.every(id=>s.has(id));
+      }
+      case 'umatan':
+        return top3Ids[0]===bet.horseIds[0] && top3Ids[1]===bet.horseIds[1];
+      case 'sanrenpuku': {
+        const s = new Set(top3Ids.slice(0,3));
+        return bet.horseIds.every(id=>s.has(id));
+      }
+      case 'sanrentan':
+        return top3Ids[0]===bet.horseIds[0] && top3Ids[1]===bet.horseIds[1] && top3Ids[2]===bet.horseIds[2];
+      default: return false;
+    }
+  }
+
+  function showResult(sim){
+    const order = sim.order;
+    const top3Ids = order.slice(0,3).map(h=>h.id);
+    const resultList = $('#resultList');
+    resultList.innerHTML = '';
+    order.forEach((h,idx)=>{
+      const rankClass = idx===0?'gold':idx===1?'silver':idx===2?'bronze':'';
+      const si = STYLE_INFO[h.style];
+      const div = document.createElement('div');
+      div.className = 'result-rank';
+      div.innerHTML = `
+        <div class="rank-num ${rankClass}">${idx+1}</div>
+        <span class="mark-symbol" style="color:${h.markColor};font-size:1.1em;">${h.markSymbol}</span>
+        <span class="cap" style="background:${h.color};color:${h.textColor};">${h.id}</span>
+        <span style="flex:1;">${h.name} <span class="style-badge" style="background:${si.color};">${si.label}</span> <span class="small-note">(${h.jockey})</span></span>
+        <span class="small-note">単勝${h.winOdds.toFixed(1)}倍 複勝${h.placeOdds.toFixed(1)}倍</span>
+      `;
+      resultList.appendChild(div);
+    });
+
+    // official odds for every bet type, based on this race's actual result -
+    // shown whether or not the player bought that ticket
+    const fullOddsList = $('#fullOddsList');
+    fullOddsList.innerHTML = '';
+    const [first, second, third] = order;
+    const fullOddsRows = [
+      { label:'単勝',   combo:`${first.id}`,                                   odds: first.winOdds },
+      { label:'複勝',   combo:`${first.id}`,                                   odds: first.placeOdds },
+      { label:'複勝',   combo:`${second.id}`,                                  odds: second.placeOdds },
+      { label:'複勝',   combo:`${third.id}`,                                   odds: third.placeOdds },
+      { label:'馬連',   combo:`${first.id} - ${second.id}`,                    odds: comboOdds('umaren', [first.id, second.id]) },
+      { label:'馬単',   combo:`${first.id} → ${second.id}`,                    odds: comboOdds('umatan', [first.id, second.id]) },
+      { label:'三連複', combo:`${top3Ids.slice().sort((a,b)=>a-b).join(' - ')}`, odds: comboOdds('sanrenpuku', top3Ids) },
+      { label:'三連単', combo:`${first.id} → ${second.id} → ${third.id}`,      odds: comboOdds('sanrentan', [first.id, second.id, third.id]) }
+    ];
+    fullOddsRows.forEach(r=>{
+      const div = document.createElement('div');
+      div.className = 'betslip-item';
+      div.innerHTML = `
+        <span>${r.label} ／ ${r.combo}</span>
+        <span>${formatOdds(r.odds)}倍</span>
+      `;
+      fullOddsList.appendChild(div);
+    });
+
+    // payouts
+    const payoutList = $('#payoutList');
+    payoutList.innerHTML = '';
+    let totalPayout = 0;
+    let totalStake = 0;
+
+    if(state.bets.length===0){
+      payoutList.innerHTML = '<p class="small-note">今回は馬券を購入していません。</p>';
+    } else {
+      state.bets.forEach(b=>{
+        totalStake += b.amount;
+        const win = isHit(b, top3Ids);
+        const payout = win ? b.amount*b.odds : 0;
+        totalPayout += payout;
+        const div = document.createElement('div');
+        div.className = 'betslip-item';
+        div.innerHTML = `
+          <span>${b.label} ／ ${formatOdds(b.odds)}倍 ／ ${fmt(b.amount)}メダル</span>
+          <span class="${win?'payout-win':'payout-lose'}">${win? '的中 +'+fmt(payout)+'メダル' : 'ハズレ'}</span>
+        `;
+        payoutList.appendChild(div);
+      });
+    }
+
+    state.money = state.money - totalStake + totalPayout;
+    state.best = Math.max(state.best, state.money);
+    saveState();
+
+    const summary = document.createElement('div');
+    summary.className = 'row';
+    summary.style.marginTop = '8px';
+    summary.innerHTML = `<b>収支: ${totalPayout-totalStake>=0?'+':''}${fmt(totalPayout-totalStake)}メダル</b>`;
+    payoutList.appendChild(summary);
+
+    $('#moneyResult').textContent = fmt(state.money);
+    showScreen('result');
+  }
+
+  $('#btnNextRace').addEventListener('click', ()=>{
+    if(state.money <= 0){
+      $('#overRaces').textContent = state.raceNumber;
+      $('#overBest').textContent = fmt(state.best);
+      showScreen('over');
+      return;
+    }
+    state.raceNumber++;
+    newRace();
+    saveState();
+    renderEntry();
+    showScreen('entry');
+  });
+
+  // ---------- Title / restart ----------
+  $('#btnStart').addEventListener('click', ()=>{
+    newRace();
+    saveState();
+    renderEntry();
+    showScreen('entry');
+  });
+
+  $('#btnReset').addEventListener('click', ()=>{
+    if(confirm('メダルを'+STARTING_MONEY+'枚にリセットします。よろしいですか？')){
+      state.money = STARTING_MONEY; state.best = Math.max(state.best,STARTING_MONEY); state.raceNumber = 1;
+      saveState();
+      refreshMoneyDisplays();
+    }
+  });
+
+  $('#btnRestart').addEventListener('click', ()=>{
+    state.money = STARTING_MONEY; state.raceNumber = 1;
+    saveState();
+    refreshMoneyDisplays();
+    showScreen('title');
+  });
+
+  // ---------- init ----------
+  loadState();
+  refreshMoneyDisplays();
+  showScreen('title');
+
+})();
+</script>
+</body>
+</html>
