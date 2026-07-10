@@ -145,8 +145,11 @@
   .payout-lose{color:#ff9d8a;}
 
   .center{text-align:center;}
-  h2.section{color:var(--gold);border-bottom:1px solid var(--gold-dark);padding-bottom:6px;margin-top:0;}
+  h2.section{color:var(--gold);border-bottom:1px solid var(--gold-dark);padding-bottom:5px;margin:0 0 8px;}
   .small-note{font-size:.8em;color:#a9c9ae;}
+  .btn-group{display:flex;gap:6px;flex-wrap:nowrap;align-items:center;}
+  .btn-group .btn{flex:0 1 auto;white-space:nowrap;}
+  .money-bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   select,input[type=number]{
     background:#0e2c18;color:var(--text);border:1px solid var(--gold-dark);border-radius:6px;padding:6px;
     font-size:16px; /* prevents iOS Safari from auto-zooming in on focus */
@@ -156,31 +159,40 @@
 
   /* ---------- Smartphone layout ---------- */
   @media (max-width:600px){
-    #app{padding:8px;}
-    .title-badge{padding:26px 6px 14px;}
-    .title-badge h1{font-size:1.7em;letter-spacing:1px;}
-    .title-badge p{font-size:.85em;}
-    .panel{padding:12px;margin:10px 0;border-radius:10px;}
-    h2.section{font-size:1.05em;}
-    .btn{padding:11px 14px;font-size:.95em;}
-    .btn.small{padding:9px 12px;font-size:.85em;}
-    /* buttons grouped in a row become equal-width tap targets that wrap cleanly */
-    .row{gap:8px;}
-    .row .btn{flex:1 1 auto;min-width:110px;}
-    .money-bar{font-size:.82em;padding:7px 10px;gap:6px;flex-wrap:wrap;}
+    #app{padding:6px;}
+    .title-badge{padding:16px 6px 8px;}
+    .title-badge h1{font-size:1.6em;letter-spacing:1px;}
+    .title-badge p{font-size:.82em;}
+    .panel{padding:10px;margin:8px 0;border-radius:10px;}
+    h2.section{font-size:1em;margin-bottom:6px;padding-bottom:4px;}
+    .btn{padding:9px 12px;font-size:.88em;}
+    .btn.small{padding:7px 10px;font-size:.8em;}
+    /* keep button rows on one line - shrink to fit instead of wrapping */
+    .row{gap:6px;flex-wrap:nowrap;}
+    .row > *{min-width:0;}
+    .row > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .btn-group{gap:4px;}
+    .btn-group .btn{padding:8px 7px;font-size:.72em;}
+    .money-bar{font-size:.74em;padding:6px 8px;gap:6px;margin-bottom:6px;flex-wrap:nowrap;}
     table{font-size:.78em;}
-    th,td{padding:5px 3px;}
+    th,td{padding:4px 3px;}
     .cap{width:20px;height:20px;font-size:.72em;}
     .style-badge{font-size:.68em;padding:1px 5px;}
     .mark-symbol{font-size:1.15em;}
-    .horse-comment{font-size:.72em;}
-    .chip{padding:8px 13px;font-size:.85em;}
-    .formation-chip-row .chip{padding:7px 11px;font-size:.8em;min-width:38px;}
-    .amt-row input[type=number]{width:64px;}
-    #oddsPreview{font-size:1em;}
-    .result-rank{flex-wrap:wrap;gap:6px 8px;}
-    .betslip-item{font-size:.8em;padding:6px 8px;}
-    #commentary{font-size:.85em;padding:7px 10px;}
+    .horse-comment{font-size:.72em;margin-top:1px;}
+    .chip{padding:7px 12px;font-size:.82em;}
+    .formation-chip-row{gap:5px;}
+    .formation-chip-row .chip{padding:6px 10px;font-size:.78em;min-width:36px;}
+    #betPanel{gap:10px;}
+    #horsePickers{gap:8px;}
+    .amt-row{gap:5px;margin-top:5px;}
+    .amt-row input[type=number]{width:56px;}
+    #oddsPreview{font-size:.95em;}
+    .result-rank{flex-wrap:wrap;gap:5px 7px;padding:5px 3px;}
+    .betslip-item{font-size:.78em;padding:5px 7px;margin:3px 0;}
+    #commentary{font-size:.82em;padding:6px 9px;margin-top:6px;}
+    [style*="margin-top:10px"]{margin-top:6px !important;}
+    [style*="margin-top:14px"]{margin-top:8px !important;}
   }
 </style>
 </head>
@@ -196,14 +208,19 @@
     <div class="panel center">
       <p>所持メダル <b style="color:var(--gold);font-size:1.3em;" id="titleMoney">10,000</b> 枚からスタート</p>
       <p class="small-note">歴代最高メダル: <span id="titleBest">10,000</span> 枚</p>
-      <button class="btn" id="btnStart" style="font-size:1.2em;padding:14px 40px;">レース場へ入場する</button>
-      <br><br>
+      <div class="small-note" style="margin-top:8px;">出走頭数</div>
+      <div id="numHorsesChips" class="formation-chip-row center" style="justify-content:center;">
+        <span class="chip" data-num="8">8頭</span>
+        <span class="chip active" data-num="12">12頭</span>
+      </div>
+      <button class="btn" id="btnStart" style="font-size:1.2em;padding:14px 40px;margin-top:10px;">レース場へ入場する</button>
+      <br>
       <button class="btn secondary small" id="btnReset">メダルをリセットする</button>
     </div>
     <div class="panel">
       <h2 class="section">遊び方</h2>
       <p class="small-note">
-        毎レース12頭が出走。馬ごとの実力差ははっきりしており、単勝オッズにも大きな開きが出る。
+        毎レース選んだ頭数(8頭または12頭)が出走。馬ごとの実力差ははっきりしており、単勝オッズにも大きな開きが出る。
         レース結果はオッズ(実力)に応じた抽選で決まるため、人気馬が勝ちやすい一方で、人気薄が勝つ大波乱も起こり得る。
         逃げ・先行・差し・追込の4つの脚質は序盤の隊列(逃げ・先行は前目、差し・追込は後方)に表れ、
         レース映像に個性を与える。単勝(1着的中)・複勝(3着以内)に加え、馬連・馬単(2頭の組み合わせ)、
@@ -276,10 +293,10 @@
       <div id="betSlip" style="margin-top:10px;"></div>
       <div class="row" style="margin-top:14px;">
         <span class="small-note">合計購入メダル: <b id="betTotal">0</b> 枚</span>
-        <div>
+        <div class="btn-group">
           <button class="btn secondary small" id="btnClearBets">全て取消</button>
-          <button class="btn secondary" id="btnSkipBet">見送ってレース観戦</button>
-          <button class="btn" id="btnGoRace">発走！</button>
+          <button class="btn secondary small" id="btnSkipBet">見送ってレース観戦</button>
+          <button class="btn small" id="btnGoRace">発走！</button>
         </div>
       </div>
     </div>
@@ -353,7 +370,7 @@
   const CAP_COLORS = ["#ffffff","#111111","#e53935","#1e5bd6","#f2c811","#2e9e3f","#f08a24","#e5599f","#8e44ad","#16a2b8","#b8860b","#7b2d26"];
   const CAP_TEXT   = ["#111","#fff","#fff","#fff","#3a2a05","#fff","#3a2a05","#fff","#fff","#fff","#3a2a05","#fff"];
   const COAT_COLORS = ["#6b4a2c","#8b5a2b","#3d2817","#c9a876","#241f1c","#5a3a1e","#9c7040","#2b2320"];
-  const NUM_HORSES = 12;
+  let NUM_HORSES = 12; // selectable on the title screen (8 or 12)
   const DISTANCES = [
     {m:1400,label:"1400m(短距離)",fatigue:0.80},
     {m:1800,label:"1800m(中距離)",fatigue:0.72},
@@ -544,9 +561,11 @@
       const m = localStorage.getItem('dd4_money');
       const b = localStorage.getItem('dd4_best');
       const r = localStorage.getItem('dd4_race');
+      const n = localStorage.getItem('dd4_numHorses');
       if(m!==null){ state.money = parseInt(m,10); }
       if(b!==null){ state.best = parseInt(b,10); }
       if(r!==null){ state.raceNumber = parseInt(r,10); }
+      if(n==='8' || n==='12'){ NUM_HORSES = parseInt(n,10); }
     }catch(e){}
   }
   function saveState(){
@@ -554,6 +573,7 @@
       localStorage.setItem('dd4_money', state.money);
       localStorage.setItem('dd4_best', state.best);
       localStorage.setItem('dd4_race', state.raceNumber);
+      localStorage.setItem('dd4_numHorses', NUM_HORSES);
     }catch(e){}
   }
 
@@ -1619,6 +1639,14 @@
   });
 
   // ---------- Title / restart ----------
+  document.querySelectorAll('#numHorsesChips .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      NUM_HORSES = parseInt(c.dataset.num, 10);
+      document.querySelectorAll('#numHorsesChips .chip').forEach(x=>x.classList.toggle('active', x===c));
+      saveState();
+    });
+  });
+
   $('#btnStart').addEventListener('click', ()=>{
     newRace();
     saveState();
@@ -1643,6 +1671,9 @@
 
   // ---------- init ----------
   loadState();
+  document.querySelectorAll('#numHorsesChips .chip').forEach(c=>{
+    c.classList.toggle('active', parseInt(c.dataset.num,10)===NUM_HORSES);
+  });
   refreshMoneyDisplays();
   showScreen('title');
 
