@@ -69,6 +69,40 @@
     font-size:.72em;padding:8px 3px;
   }
   .train-facility-row .btn.recommended{border:1px solid var(--gold);animation:recPulse 1.4s ease-in-out infinite;}
+  /* medal top-up package rows */
+  .shop-package-list{display:flex;flex-direction:column;gap:8px;}
+  .shop-package-row{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:rgba(0,0,0,.2);padding:10px 12px;border-radius:8px;
+    border:1px solid transparent;
+  }
+  .shop-package-row.best-value{border-color:var(--gold);background:rgba(230,195,92,.14);}
+  .shop-package-medals{font-weight:bold;color:var(--gold);font-size:1.05em;}
+  .shop-package-price{font-size:.8em;color:#bcd8bf;}
+  /* double-up chest picker - floats on top of the race screen while the
+     race is playing, instead of taking over the whole screen */
+  .doubleup-overlay{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.6);z-index:80;padding:16px;box-sizing:border-box;
+  }
+  .doubleup-panel{
+    max-width:420px;width:100%;margin:0 auto;
+    box-shadow:0 10px 40px rgba(0,0,0,.6);
+  }
+  .doubleup-chest-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .doubleup-chest-row .chest-btn{
+    font-size:2.4em;line-height:1;width:76px;height:76px;
+    background:linear-gradient(180deg,#f6dd8a,var(--gold) 60%,var(--gold-dark));
+    border:none;border-radius:12px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .12s ease;
+  }
+  .doubleup-chest-row .chest-btn:not(:disabled):hover{transform:translateY(-3px) scale(1.05);}
+  .doubleup-chest-row .chest-btn:disabled{opacity:.4;cursor:default;}
+  .doubleup-chest-row .chest-btn.chosen{box-shadow:0 0 0 3px #fff inset,0 0 14px 2px var(--gold);}
+  .doubleup-reveal-line{font-weight:bold;color:var(--gold);font-size:1.1em;}
+  .doubleup-tag{color:var(--gold);font-weight:bold;}
   .my-horse-row{background:rgba(230,195,92,.14);}
   .my-badge{display:inline-block;background:var(--gold);color:#3a2a05;font-size:.7em;font-weight:bold;
     border-radius:6px;padding:1px 5px;margin-right:3px;}
@@ -126,8 +160,8 @@
   .grade-ribbon{
     flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
-    width:42px;height:42px;border-radius:9px;
-    font-weight:bold;font-size:1.1em;color:#3a2a05;
+    min-width:42px;height:42px;padding:0 6px;border-radius:9px;
+    font-weight:bold;font-size:.95em;color:#3a2a05;white-space:nowrap;
     box-shadow:0 2px 6px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.25);
   }
   .race-header-title{flex:1;min-width:0;}
@@ -175,6 +209,16 @@
   table{width:100%;border-collapse:collapse;font-size:.88em;}
   th,td{padding:6px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);}
   th{color:var(--gold);font-weight:600;}
+  /* 出走表(#horseTableBody)は1頭1行に収めて全体の高さを半分ほどに圧縮する */
+  #horseTableBody td{padding:3px 5px;}
+  .horse-name-cell{max-width:0;} /* forces the auto-layout table to size this column from the sibling cells, so the line below can ellipsis instead of wrapping */
+  .horse-name-line{
+    overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  }
+  .horse-name-line .style-badge,.horse-name-line .horse-comment,.horse-name-line .trend-arrow{margin-left:4px;}
+  .recent-form-cell{font-size:1.05em;color:#e6f2e8;white-space:nowrap;}
+  .recent-form-entry{display:inline-flex;align-items:baseline;margin-right:3px;font-weight:bold;}
+  .recent-form-grade{font-size:.62em;font-weight:bold;margin-left:1px;}
 
   .cap{
     display:inline-flex;align-items:center;justify-content:center;
@@ -196,7 +240,7 @@
     text-shadow:0 1px 2px rgba(0,0,0,.5);
   }
   .horse-comment{
-    font-size:.78em;color:#cfe8d4;font-style:italic;margin-top:2px;
+    font-size:.78em;color:#cfe8d4;font-style:italic;
   }
 
   #betPanel{display:flex;flex-direction:column;gap:16px;width:100%;}
@@ -210,10 +254,14 @@
   .chip.active,.chip:hover{background:var(--gold);color:#3a2a05;font-weight:bold;}
   .formation-chip-row{display:flex;flex-wrap:wrap;gap:6px;width:100%;}
   .formation-chip-row .chip{padding:6px 12px;font-size:.85em;min-width:34px;text-align:center;}
-  /* horse tabs on the training screen: always a single row, scroll
-     horizontally instead of wrapping so up to 6 owned horses stay tidy */
-  .horse-tabs-row{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
-  .horse-tabs-row .chip{flex:0 0 auto;white-space:nowrap;}
+  /* horse tabs on the training screen: fixed-width grid, 3 per row, so the
+     max of 6 owned horses always lays out as exactly 2 rows (no horizontal
+     scrolling, no reflow as horses are added) */
+  .horse-tabs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
+  .horse-tabs-row .chip{
+    width:100%;box-sizing:border-box;margin:0;text-align:center;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
   .amt-row{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
   .amt-row input[type=number]{width:70px;text-align:center;}
   #oddsPreview{font-weight:bold;color:var(--gold);font-size:1.1em;}
@@ -275,10 +323,15 @@
     table{font-size:.78em;}
     th,td{padding:4px 3px;}
     .cap{width:20px;height:20px;font-size:.72em;}
+    .recent-form-cell{font-size:.88em;}
+    .recent-form-entry{margin-right:2px;}
+    .recent-form-grade{font-size:.6em;}
     .style-badge{font-size:.68em;padding:1px 5px;}
     .mark-symbol{font-size:1.15em;}
-    .horse-comment{font-size:.72em;margin-top:1px;}
+    .horse-comment{font-size:.72em;}
     .chip{padding:7px 12px;font-size:.82em;}
+    .horse-tabs-row{gap:4px;}
+    .horse-tabs-row .chip{padding:6px 3px;font-size:.68em;}
     .formation-chip-row{gap:5px;}
     .formation-chip-row .chip{padding:6px 10px;font-size:.78em;min-width:36px;}
     #betPanel{gap:10px;}
@@ -297,7 +350,7 @@
     .train-facility-row{gap:3px;}
     .train-facility-row .btn{font-size:.6em;padding:6px 2px;}
     .race-header{padding:8px 9px 6px;margin-bottom:6px;}
-    .grade-ribbon{width:36px;height:36px;font-size:.95em;border-radius:8px;}
+    .grade-ribbon{min-width:36px;height:36px;font-size:.78em;padding:0 5px;border-radius:8px;}
     .race-header-name{font-size:.92em;}
     .race-header-sub{font-size:.72em;}
     .race-header-money{font-size:.62em;}
@@ -308,8 +361,8 @@
     .bet-type-icons .chip{min-width:44px;font-size:.72em;}
     .calendar-strip{grid-template-columns:repeat(6,1fr);}
     .calendar-slot{height:22px;font-size:.68em;}
-    .action-bar{padding:6px 8px;gap:6px;}
-    .action-bar .btn{padding:9px 4px;font-size:.76em;}
+    .action-bar{padding:6px 6px;gap:4px;}
+    .action-bar .btn{padding:8px 2px;font-size:.66em;}
     [style*="margin-top:10px"]{margin-top:6px !important;}
     [style*="margin-top:14px"]{margin-top:8px !important;}
   }
@@ -325,7 +378,7 @@
       <p>Dream Derby ― 予想と一発逆転の競馬シミュレーション</p>
     </div>
     <div class="panel center">
-      <p class="small-note" style="margin-top:8px;">出走頭数はグレードで決定(G3:8頭 / G2:10頭 / G1:12頭)</p>
+      <p class="small-note" style="margin-top:8px;">出走頭数はグレードで決定(G3:8頭 / G2:10頭 / G1:12頭 / 海外G1:14頭)</p>
       <button class="btn" id="btnStartNew" style="font-size:1.2em;padding:14px 40px;margin-top:10px;">最初から始める</button>
       <br>
       <button class="btn secondary" id="btnContinue" style="font-size:1.1em;padding:12px 34px;margin-top:10px;">続きから始める</button>
@@ -334,7 +387,7 @@
     <div class="panel">
       <h2 class="section">遊び方</h2>
       <p class="small-note">
-        出走頭数はレースのグレードで決まる(G3:8頭 / G2:10頭 / G1:12頭)。馬ごとの実力差ははっきりしており、単勝オッズにも大きな開きが出る。
+        出走頭数はレースのグレードで決まる(G3:8頭 / G2:10頭 / G1:12頭 / 海外G1:14頭)。馬ごとの実力差ははっきりしており、単勝オッズにも大きな開きが出る。
         レース結果はオッズ(実力)に応じた抽選で決まるため、人気馬が勝ちやすい一方で、人気薄が勝つ大波乱も起こり得る。
         逃げ・先行・差し・追込の4つの脚質は序盤の隊列(逃げ・先行は前目、差し・追込は後方)に表れ、
         レース映像に個性を与える。単勝(1着的中)・複勝(3着以内)に加え、馬連・馬単(2頭の組み合わせ)、
@@ -343,8 +396,8 @@
         メダルが0枚になったらゲームオーバー、さあ大穴を当てて億り人を目指せ！
         オッズと馬券をじっくり確認したら「発走」ボタンでレース開始。結果発表後は約20秒で自動的に次のレースへ。
         育成画面では自分だけの馬を最大6頭まで育成でき(1〜100メダルの調教が1頭につき1レース1回)、
-        出走登録すれば毎レース自動的に出走して賞金を狙える(複数頭の同時登録も可能)。
-        レースは固定のレーシングカレンダー(1年60戦、G1・G2・G3が決まった順番で巡ってくる)に沿って開催され、
+        出走登録すれば次のレースに出走して賞金を狙える(複数頭の同時登録も可能・登録は毎レースごとに必要)。出走登録には出走費用がかかり、金額はそのレースの5着賞金と同額(登録解除すれば返金される)。
+        レースは固定のレーシングカレンダー(1年60戦、G1・G2・G3・海外G1が決まった順番で巡ってくる。海外G1は年6戦のみ)に沿って開催され、
         今後のグレードは育成画面のカレンダーで事前に確認できる。
       </p>
     </div>
@@ -375,7 +428,7 @@
           <span class="small-note" id="myHorseWeek">第1週</span>
         </div>
         <p class="small-note" id="myHorseRecord">騎手: - ／ 出走0回 / 1着0回 / 3着以内0回</p>
-        <div class="small-note" style="margin-top:6px;">出走登録(登録すると解除するまで毎レース自動出走・複数頭の同時登録も可)</div>
+        <div class="small-note" style="margin-top:6px;">出走登録(次のレースのみ有効・毎回登録が必要・複数頭の同時登録も可)</div>
         <div id="raceEntryChips" class="formation-chip-row"></div>
         <p class="small-note next-grade-label" style="margin-top:4px;"></p>
         <div class="row" style="margin-top:6px;">
@@ -408,6 +461,41 @@
     </div>
   </div>
 
+  <!-- MEDAL TOP-UP: reachable any time via the action bar. No real payment
+       is wired up yet - packages just grant medals for free - but the
+       package list/UI is built so a real 決済 (payment) flow can be
+       dropped in later without reshaping the screen. -->
+  <div id="screen-shop" class="screen hidden">
+    <div class="panel">
+      <div class="row">
+        <h2 class="section" style="border:none;margin:0;padding:0;">💰 メダル補充</h2>
+        <button class="btn secondary small" id="btnCloseShop">← 戻る</button>
+      </div>
+      <p>所持メダル <b style="color:var(--gold);font-size:1.3em;" id="moneyShop">10,000</b> 枚</p>
+      <p class="small-note" style="margin:4px 0 10px;">
+        下のボタンからメダルを補充できます。
+      </p>
+      <div id="shopPackages" class="shop-package-list"></div>
+      <p class="small-note" id="shopFeedback" style="margin-top:10px;min-height:1.2em;"></p>
+    </div>
+  </div>
+
+  <!-- DOUBLE-UP CHANCE: floating overlay shown ON TOP of the race screen
+       the instant the race starts, roughly 1-in-5 times - the race plays
+       out underneath while the player picks. Picking one of 5 chests
+       doubles the payout of the matching bet type(s) (or all of them, for
+       the rare "ALL" chest) if that bet hits this race. If no chest is
+       picked within 5 seconds, the center chest is auto-selected. -->
+  <div id="doubleupOverlay" class="doubleup-overlay hidden">
+    <div class="panel doubleup-panel">
+      <h2 class="section" style="text-align:center;">🎉 ダブルアップチャンス！</h2>
+      <p class="small-note" style="text-align:center;">宝箱を1つ選んでください。選んだ式別の馬券がこのレースで的中すると払戻が2倍になります。</p>
+      <p class="small-note" id="doubleupCountdown" style="text-align:center;color:var(--gold);font-weight:bold;"></p>
+      <div id="doubleupChests" class="doubleup-chest-row"></div>
+      <div id="doubleupReveal" class="center" style="margin-top:14px;min-height:1.4em;"></div>
+    </div>
+  </div>
+
   <!-- RACE ENTRY / ODDS BOARD -->
   <div id="screen-entry" class="screen hidden">
     <div class="race-header">
@@ -426,7 +514,7 @@
       <h2 class="section">出走表・オッズ(単勝・複勝)</h2>
       <div class="table-scroll">
         <table>
-          <thead><tr><th>枠</th><th style="text-align:left;">馬名 / 騎手 / 脚質 / 短評</th><th>予想印</th><th>単勝</th><th>複勝</th></tr></thead>
+          <thead><tr><th>枠</th><th style="text-align:left;">馬名 / 騎手 / 脚質 / 短評</th><th>予想印</th><th>単勝</th><th>複勝</th><th>直近5走</th></tr></thead>
           <tbody id="horseTableBody"></tbody>
         </table>
       </div>
@@ -440,12 +528,14 @@
           <div id="betTypeChips" class="formation-chip-row bet-type-icons">
             <span class="chip type-chip active" data-type="win">🥇単勝</span>
             <span class="chip type-chip" data-type="place">🎖複勝</span>
+            <span class="chip type-chip" data-type="ride">🎢ライド</span>
             <span class="chip type-chip" data-type="umaren">👥馬連</span>
             <span class="chip type-chip" data-type="umatan">🔀馬単</span>
             <span class="chip type-chip" data-type="sanrenpuku">🎯三連複</span>
             <span class="chip type-chip" data-type="sanrentan">🎲三連単</span>
           </div>
         </div>
+        <div id="rideOptions" class="hidden"></div>
         <div id="horsePickers"></div>
         <div>
           <div class="small-note" id="amountLabel">枚数(メダル)</div>
@@ -458,11 +548,11 @@
             <span class="chip" data-amt="500">500</span>
             <span class="chip" data-amt="1000">1000</span>
             <span class="chip" data-amt="5000">5000</span>
-            <span class="chip" data-amt="10000">10000</span>
+            <span class="chip" data-amt="9999">9999</span>
           </div>
           <div class="amt-row">
             <button class="btn small secondary" id="amtMinus">-1</button>
-            <input type="number" id="betAmountInput" min="1" value="1">
+            <input type="number" id="betAmountInput" min="1" max="9999" value="1">
             <button class="btn small secondary" id="amtPlus">+1</button>
             <button class="btn small secondary" id="amtAllIn">ALL-IN</button>
           </div>
@@ -530,12 +620,13 @@
     </div>
   </div>
 
-  <!-- ALWAYS-ON ACTION BAR: 発走 / 育成 / 馬券 - fixed so it stays visible
-       regardless of scroll position; hidden on the title/game-over screens -->
+  <!-- ALWAYS-ON ACTION BAR: 発走 / 育成 / 馬券 / 補充 - fixed so it stays
+       visible regardless of scroll position; hidden on the title/game-over screens -->
   <div id="actionBar" class="action-bar hidden">
     <button class="btn" id="btnGoToRace">🏁 発走</button>
     <button class="btn secondary" id="btnGoTrainingNav">🐴 育成</button>
     <button class="btn secondary" id="btnGoBettingNav">🎫 馬券</button>
+    <button class="btn secondary small" id="btnGoShop">💰 補充</button>
     <button class="btn secondary small" id="btnQuitSave">💾 終了する</button>
   </div>
 
@@ -561,8 +652,8 @@
     "横山 大河","川田 隼人","戸崎 陽斗","ルメール太郎","デムーロ二世","北村 翼",
     "疾風 一馬","黄金 龍二","静弦 陸","碧海 翔太","紅蓮 隼人","雷神 颯"
   ];
-  const CAP_COLORS = ["#ffffff","#111111","#e53935","#1e5bd6","#f2c811","#2e9e3f","#f08a24","#e5599f","#8e44ad","#16a2b8","#b8860b","#7b2d26"];
-  const CAP_TEXT   = ["#111","#fff","#fff","#fff","#3a2a05","#fff","#3a2a05","#fff","#fff","#fff","#3a2a05","#fff"];
+  const CAP_COLORS = ["#ffffff","#111111","#e53935","#1e5bd6","#f2c811","#2e9e3f","#f08a24","#e5599f","#8e44ad","#16a2b8","#b8860b","#7b2d26","#2ecc71","#ff6fae"];
+  const CAP_TEXT   = ["#111","#fff","#fff","#fff","#3a2a05","#fff","#3a2a05","#fff","#fff","#fff","#3a2a05","#fff","#0a2e18","#3a0a1e"];
   const COAT_COLORS = ["#6b4a2c","#8b5a2b","#3d2817","#c9a876","#241f1c","#5a3a1e","#9c7040","#2b2320"];
   const DISTANCES = [
     {m:1400,label:"1400m(短距離)",fatigue:0.80},
@@ -579,6 +670,10 @@
   const BET_TYPES = {
     win:        { label:'単勝',   n:1, ordered:false, positions:['馬番'] },
     place:      { label:'複勝',   n:1, ordered:false, positions:['馬番'] },
+    // ライド: 複勝と同じ的中条件(3着以内)だが払戻率100%(テイクアウトなし)。
+    // 賭け金は手入力ではなく、前レースの当たり枚数(馬券払戻+出走賞金を
+    // 含む)がそのまま自動セットされる「乗り換え」専用の賭け式。
+    ride:       { label:'ライド', n:1, ordered:false, positions:['馬番'] },
     umaren:     { label:'馬連',   n:2, ordered:false, positions:['1頭目','2頭目'] },
     umatan:     { label:'馬単',   n:2, ordered:true,  positions:['1着','2着'] },
     sanrenpuku: { label:'三連複', n:3, ordered:false, positions:['1頭目','2頭目','3頭目'] },
@@ -588,6 +683,7 @@
   // drawRaceResult / orderProb below), so long-run payback converges exactly to
   // 100/TAKEOUT for every bet type.
   const COMBO_TAKEOUT = { umaren:1.30, umatan:1.35, sanrenpuku:1.40, sanrentan:1.45 };
+  const RIDE_TAKEOUT = 1.0; // ライド: 払戻率100%、控除なし
 
   // ---------- Running styles (脚質) ----------
   // NOTE: style no longer affects who actually wins (see the "result first,
@@ -716,11 +812,12 @@
     { symbol:'－', color:'#8a9a8f' },
     { symbol:'－', color:'#8a9a8f' }
   ];
+  // 短評は表示幅の都合上すべて4文字ちょうどに統一
   const STYLE_COMMENTS = {
-    nige:   ["ハイペースで逃げ切り濃厚","マイペースに持ち込めれば粘り込み十分","前々の積極的な位置取りに期待"],
-    senko:  ["好位から立ち回りの上手さが光る","仕掛けどころ次第で上位争いも","流れに乗れれば怖い存在"],
-    sashi:  ["直線一気の脚に注目したい","展開待ちだが末脚は魅力十分","中団でじっくり脚を溜めるタイプ"],
-    oikomi: ["最後方から豪脚一閃なるか","終盤の伸びは侮れない","展開がハマれば一撃のポテンシャル"]
+    nige:   ["逃げ切り","独走態勢","快速先行"],
+    senko:  ["好位争い","先行抜群","好位安定"],
+    sashi:  ["直線一気","末脚魅力","鋭い末脚"],
+    oikomi: ["豪脚一閃","大外一気","末脚爆発"]
   };
   function assignPredictions(horses){
     // independent noise from the odds calculation, so the mark order can disagree with the odds
@@ -737,18 +834,50 @@
 
   const STARTING_MONEY = 10000;
   const MAX_HORSES = 6; // max number of owned/trained horses at once
+  const MAX_BET_AMOUNT = 9999; // 1口(1組み合わせ/1点)あたりの最大ベット数(ライドを除く)
+  // ライドは前レースの当たり枚数をそのまま賭けるため、上の一般上限とは別に
+  // 専用の上限を持つ: フルベットは1点あたり最大99999、ハーフベットは
+  // 1点あたり最大49999、最大2点まで購入できるので合計は最大99998(49999×2)
+  const MAX_RIDE_AMOUNT = 99999;
+  const MAX_RIDE_HALF_PER_TICKET = 49999;
+  const MAX_RIDE_HALF_TOTAL = MAX_RIDE_HALF_PER_TICKET * 2; // 99998 (表示用)
 
-  // ---------- Race grades (G1/G2/G3) ----------
+  // ---------- Medal top-up (shop) ----------
+  // No real payment integration exists yet - each package just grants
+  // medals for free right now - but the package list is kept as data here
+  // (medal amount + a placeholder price label) so a real 決済 (payment)
+  // call can later be dropped into the button handler without reshaping
+  // this screen or its data model.
+  const SHOP_PACKAGES = [
+    { key:'s',  medals:1000,  priceLabel:'¥120(予定)' },
+    { key:'m',  medals:5000,  priceLabel:'¥480(予定)' },
+    { key:'l',  medals:20000, priceLabel:'¥1,480(予定)', bestValue:true },
+    { key:'xl', medals:50000, priceLabel:'¥2,980(予定)' }
+  ];
+
+  // ---------- Race grades (G1/G2/G3/海外G1) ----------
   // Higher grades pay bigger fixed 賞金 (prize money) for the player's own
   // horse, field tougher rivals (fieldBonus, added into generateHorses'
-  // classBoost), and run with a bigger field (fieldSize).
+  // classBoost), and run with a bigger field (fieldSize). 海外G1 (an
+  // overseas G1) is the rarest and richest tier, run 6 times a year in
+  // place of what would otherwise be a G3 (see buildCalendarGrades).
   const GRADES = [
-    { key:'G3', label:'G3', color:'#4c8a63', textColor:'#eafff0', fieldBonus:0,  fieldSize:8,  prizeTable:[300,120,90,60,30] },
-    { key:'G2', label:'G2', color:'#3498db', textColor:'#fff',    fieldBonus:8,  fieldSize:10, prizeTable:[1000,400,300,200,100] },
-    { key:'G1', label:'G1', color:'#e6c35c', textColor:'#3a2a05', fieldBonus:18, fieldSize:12, prizeTable:[3000,1500,900,600,300] }
+    { key:'G3',  label:'G3',    color:'#4c8a63', textColor:'#eafff0', fieldBonus:0,  fieldSize:8,  prizeTable:[300,120,90,60,30] },
+    { key:'G2',  label:'G2',    color:'#3498db', textColor:'#fff',    fieldBonus:8,  fieldSize:10, prizeTable:[1000,400,300,200,100] },
+    { key:'G1',  label:'G1',    color:'#e6c35c', textColor:'#3a2a05', fieldBonus:18, fieldSize:12, prizeTable:[3000,1500,900,600,300] },
+    { key:'IG1', label:'海外G1', color:'#7b3fa0', textColor:'#fff',   fieldBonus:28, fieldSize:14, prizeTable:[10000,4000,3000,2000,1000] }
   ];
   function gradeInfo(key){
     return GRADES.find(g=>g.key===key) || GRADES[0];
+  }
+  // 実際のカレンダーの出現比率(G3 60% / G2 20% / G1 10% / 海外G1 10%)に
+  // 合わせて、CPU馬の表示専用の過去戦績にもっともらしいグレードを割り振る
+  function randomPastGrade(){
+    const r = Math.random();
+    if(r < 0.6) return 'G3';
+    if(r < 0.8) return 'G2';
+    if(r < 0.9) return 'G1';
+    return 'IG1';
   }
   // 賞金 (prize money) for the player's own horse, by finishing rank and
   // the grade of the race it ran in - independent of betting payouts.
@@ -760,18 +889,25 @@
   function prizeTableText(gradeKey){
     return gradeInfo(gradeKey).prizeTable.map((p,i)=>`${i+1}着${fmt(p)}`).join(' ');
   }
+  // 出走登録には出走費用がかかる。金額はそのレース(グレード)の5着賞金と同額。
+  function entryFee(gradeKey){
+    return calcPrize(4, gradeKey);
+  }
 
   // ---------- Racing calendar ----------
   // A single fixed (non-random) 1-year schedule of race grades that loops
   // forever: every 10th race of the year is G1, every other 4th race is G2,
-  // and the rest are G3. This is a pure function of position - no
-  // Math.random anywhere - so the calendar is identical every time the game
-  // is played, and race #23 of any given year is always the same grade.
+  // every 10th race offset by 5 (5,15,25...) is 海外G1 (6 times a year,
+  // swapped in place of what would otherwise be a G3), and the rest are G3.
+  // This is a pure function of position - no Math.random anywhere - so the
+  // calendar is identical every time the game is played, and race #23 of
+  // any given year is always the same grade.
   const CALENDAR_LENGTH = 60; // races per year (kept within the 55-60 range)
   function buildCalendarGrades(){
     const grades = [];
     for(let i=1;i<=CALENDAR_LENGTH;i++){
       if(i % 10 === 0) grades.push('G1');
+      else if(i % 10 === 5) grades.push('IG1');
       else if(i % 4 === 0) grades.push('G2');
       else grades.push('G3');
     }
@@ -799,11 +935,12 @@
     condition: CONDITIONS[0],
     bets: [],       // {type, horseIds, ordered, amount, odds, label}
     lastResult: null,
-    myHorses: [],       // up to 3 owned horses: {ownerId, name, jockey, style, coatColor, speed, stamina, guts, luck, fatigue, aptitude, week, races, wins, top3}
-    raceHorseIds: [],   // ownerIds of the horse(s) 出走登録 (registered to race) - persists until the player deregisters them
+    myHorses: [],       // up to 6 owned horses: {ownerId, name, jockey, style, coatColor, speed, stamina, guts, talent, fatigue, aptitude, week, races, wins, top3, recentResults}
+    raceHorseIds: [],   // ownerIds of the horse(s) 出走登録 (registered to race) - only good for the next race, auto-cleared each cycle (see runBettingPhase)
     trainedIds: [],     // ownerIds already trained/fed THIS cycle - each owned horse gets its own 1レース1調教
     gradeKey: 'G3',      // grade of the CURRENT race, derived from the fixed calendar (see calendarGradeForRace)
-    nextGradeKey: 'G3'   // grade of the race AFTER that, likewise derived - shown as a preview
+    nextGradeKey: 'G3',  // grade of the race AFTER that, likewise derived - shown as a preview
+    lastRaceWinnings: 0  // total won last race (bet payouts + 出走賞金) - this is what a ライド bet auto-stakes
   };
 
   function loadState(){
@@ -811,11 +948,13 @@
       const m = localStorage.getItem('dd4_money');
       const b = localStorage.getItem('dd4_best');
       const r = localStorage.getItem('dd4_race');
+      const lrw = localStorage.getItem('dd4_lastRaceWinnings');
       const mhs = localStorage.getItem('dd4_myHorses');
       const rids = localStorage.getItem('dd4_raceHorseIds');
       if(m!==null){ state.money = parseInt(m,10); }
       if(b!==null){ state.best = parseInt(b,10); }
       if(r!==null){ state.raceNumber = parseInt(r,10); }
+      if(lrw!==null){ state.lastRaceWinnings = parseInt(lrw,10)||0; }
       if(mhs){
         try{ state.myHorses = JSON.parse(mhs); }catch(e2){}
       } else {
@@ -838,13 +977,18 @@
         if(oldRid!==null && oldRid!=='null'){ state.raceHorseIds = [parseInt(oldRid,10)]; }
         else if(oldWr==='1' && state.myHorses[0]){ state.raceHorseIds = [state.myHorses[0].ownerId]; }
       }
-      // migrate saves from before fatigue/aptitude/week/ownerId existed
+      // migrate saves from before fatigue/aptitude/week/ownerId/talent existed
       state.myHorses.forEach(h=>{
         if(typeof h.fatigue !== 'number') h.fatigue = 0;
         if(typeof h.aptitude !== 'number') h.aptitude = 0;
         if(typeof h.week !== 'number') h.week = 1;
         if(typeof h.top3 !== 'number') h.top3 = 0;
         if(typeof h.ownerId !== 'number') h.ownerId = 1;
+        // 素質(talent) replaces the old 運(luck) stat - old saves only had
+        // luck, which doesn't map to a meaningful medal-spend total, so
+        // start the pool fresh at 0 rather than carrying over a fake value
+        if(typeof h.talent !== 'number') h.talent = 0;
+        if(!Array.isArray(h.recentResults)) h.recentResults = [];
       });
     }catch(e){}
   }
@@ -853,6 +997,7 @@
       localStorage.setItem('dd4_money', state.money);
       localStorage.setItem('dd4_best', state.best);
       localStorage.setItem('dd4_race', state.raceNumber);
+      localStorage.setItem('dd4_lastRaceWinnings', state.lastRaceWinnings||0);
       localStorage.setItem('dd4_myHorses', JSON.stringify(state.myHorses));
       localStorage.setItem('dd4_raceHorseIds', JSON.stringify(state.raceHorseIds));
     }catch(e){}
@@ -889,6 +1034,11 @@
     if(o>=1000) return Math.round(o).toLocaleString('ja-JP');
     return o.toFixed(1);
   }
+  // ライド専用: 小数点4桁まで表示(他の式別は1桁)
+  function formatRideOdds(o){
+    if(o>=1000) return Math.round(o).toLocaleString('ja-JP');
+    return o.toFixed(4);
+  }
 
   // ---------- Race generation ----------
   function generateHorses(){
@@ -912,14 +1062,23 @@
       const speed   = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
       const stamina = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
       const guts    = clamp(randInt(15,95)+classBoost+randInt(-15,15), 5, 99);
-      const luck    = randInt(5,95);
+      const talent  = randInt(5,95); // CPU rivals aren't trained by the player - just an innate quality roll
+      // CPU馬には育成履歴が無いので、出走表の「直近5走」表示用にその場で
+      // もっともらしい過去戦績(着順・グレード)を生成する(表示専用・強さ計算には使わない)
+      const recentResults = [];
+      for(let j=0;j<5;j++){
+        const pastGrade = randomPastGrade();
+        const pastFieldSize = gradeInfo(pastGrade).fieldSize;
+        recentResults.push({ rank: randInt(1, pastFieldSize), field: pastFieldSize, grade: pastGrade });
+      }
       return {
         name,
         jockey:jockeys[i],
         coatColor: COAT_COLORS[randInt(0,COAT_COLORS.length-1)],
         style: styleAssign[i],
-        speed,stamina,guts,luck,
-        strength: speed*0.35+stamina*0.25+guts*0.25+luck*0.15
+        speed,stamina,guts,talent,
+        strength: speed*0.35+stamina*0.25+guts*0.25+talent*0.15,
+        recentResults
       };
     });
 
@@ -929,15 +1088,19 @@
       // accumulated 適性 (aptitude) from training gives a small, capped edge
       // on race day, separate from the raw stat numbers - up to +8 strength at SS grade
       const aptitudeBonus = (ownHorse.aptitude||0)/100 * 8;
+      // recent form (過去5戦の戦績) nudges the odds/actual strength a little -
+      // a hot streak makes the horse a shade more favored, a slump a shade less
+      const formAdj = recentFormBonus(ownHorse.recentResults);
       const mine = {
         name: ownHorse.name,
         jockey: ownHorse.jockey,
         coatColor: ownHorse.coatColor,
         style: ownHorse.style,
-        speed: ownHorse.speed, stamina: ownHorse.stamina, guts: ownHorse.guts, luck: ownHorse.luck,
-        strength: ownHorse.speed*0.35 + ownHorse.stamina*0.25 + ownHorse.guts*0.25 + ownHorse.luck*0.15 + aptitudeBonus,
+        speed: ownHorse.speed, stamina: ownHorse.stamina, guts: ownHorse.guts, talent: talentPower(ownHorse.talent),
+        strength: ownHorse.speed*0.35 + ownHorse.stamina*0.25 + ownHorse.guts*0.25 + talentPower(ownHorse.talent)*0.15 + aptitudeBonus + formAdj,
         isMine: true,
-        ownerId: ownHorse.ownerId // persistent identity, so results can be applied back to the right horse
+        ownerId: ownHorse.ownerId, // persistent identity, so results can be applied back to the right horse
+        recentResults: ownHorse.recentResults || [] // real career history, shown on the 出走表
       };
       const gate = randInt(0, horses.length); // random post position each race
       horses.splice(gate, 0, mine);
@@ -958,8 +1121,28 @@
   // training builds up fatigue that must be managed with 飼葉 (feeding), and
   // repeated training also grows a separate 適性 (aptitude) rating shown as a
   // D〜SS letter grade that gives a small edge on race day.
-  const TRAIN_STAT_CAP = 99;
+  const TRAIN_STAT_CAP = 999;
   const FATIGUE_CAP = 100;
+  // 素質 (talent) pools up every medal ever spent training/feeding this
+  // horse - a running investment counter, capped well above the other
+  // stats since medal totals can get large over a long career.
+  const TALENT_CAP = 99999;
+  // scales the raw 素質 pool down to the same 0-99 range the other core
+  // stats use, so it still contributes a sensible (not game-breaking) edge
+  // to race strength/pacing instead of swamping everything else.
+  function talentPower(rawTalent){
+    return clamp((rawTalent||0)/1000, 0, 99);
+  }
+  // 直近フォーム: 過去5戦の着順比率(0=1着,1=最下位、頭数はレースごとに違うので
+  // 比率で正規化)の平均から、レース強さに小さなボーナス/ペナルティを加える。
+  // 好調が続けばオッズは有利に、不調が続けば不利になる - 実際の抽選確率にも
+  // そのまま効くので、直近の勢いがそのままレース結果の傾向にも表れる。
+  function recentFormBonus(recentResults){
+    if(!recentResults || recentResults.length===0) return 0;
+    const ratios = recentResults.map(r=> r.field>1 ? (r.rank-1)/(r.field-1) : 0);
+    const avgRatio = ratios.reduce((a,b)=>a+b,0)/ratios.length;
+    return (0.5-avgRatio)*12; // roughly -6 (絶不調) 〜 +6 (絶好調)
+  }
   const TRAIN_FACILITIES = [
     { key:'sprint', label:'全力疾走', icon:'🏃', statKey:'speed',   desc:'スピードを鍛える調教' },
     { key:'walk',   label:'曳き運動', icon:'🚶', statKey:'stamina', desc:'スタミナを鍛える調教(疲労もやや回復)' },
@@ -972,9 +1155,10 @@
     return {
       name, jockey, style,
       coatColor: COAT_COLORS[randInt(0,COAT_COLORS.length-1)],
-      speed: 30, stamina: 30, guts: 30, luck: randInt(20,80),
+      speed: 30, stamina: 30, guts: 30, talent: 0,
       fatigue: 0, aptitude: 0, week: 1,
-      races: 0, wins: 0, top3: 0
+      races: 0, wins: 0, top3: 0,
+      recentResults: [] // last 5 races' {rank, field}, newest first - feeds recentFormBonus()
     };
   }
   function aptitudeGrade(v){
@@ -1012,6 +1196,8 @@
     const cost = facilityCost(facility, h);
     if(state.money < cost) return { result:'nomoney', gain:0, cost };
     state.money -= cost;
+    // 素質: every medal spent training this horse pools up here (capped)
+    h.talent = clamp((h.talent||0) + cost, 0, TALENT_CAP);
 
     // overtraining risk: high fatigue skews outcomes toward disappointing results
     const fatiguePenalty = h.fatigue >= 70 ? 0.22 : (h.fatigue >= 40 ? 0.10 : 0);
@@ -1055,6 +1241,8 @@
     const cost = FEED_COST;
     if(state.money < cost) return { result:'nomoney', cost };
     state.money -= cost;
+    // 素質: 飼葉代も調教費用と同じく累計プールに加算される
+    h.talent = clamp((h.talent||0) + cost, 0, TALENT_CAP);
     const recovered = randInt(20,35);
     h.fatigue = clamp(h.fatigue - recovered, 0, FATIGUE_CAP);
     let bonusStat = null, bonusGain = 0;
@@ -1136,12 +1324,14 @@
     noisy.forEach(x=>{
       const prob = (x.s/total);
       x.h.winProb = prob;
-      const odds = clamp(1/(prob*WIN_TAKEOUT), 1.1, 999);
+      const odds = clamp(1/(prob*WIN_TAKEOUT), 1.0, 999.9);
       x.h.winOdds = Math.round(odds*10)/10;
     });
     horses.sort((a,b)=>a.id-b.id);
 
-    // exact P(finish top-3) via the same Harville model, used for 複勝 odds
+    // exact P(finish top-3) via the same Harville model, used for 複勝 and
+    // ライド odds (ライド shares the same top3 hit condition as 複勝, just at
+    // a different payout rate and rounded to 4 decimal places)
     const PLACE_TAKEOUT = 1.25;
     horses.forEach(h=>{
       let p = h.winProb;
@@ -1153,8 +1343,15 @@
           p += orderProb([others[a].id, others[b].id, h.id]);
         }
       }
-      const placeOdds = clamp(1/(p*PLACE_TAKEOUT), 1.05, 60);
+      const placeOdds = clamp(1/(p*PLACE_TAKEOUT), 1.0, 99.9);
       h.placeOdds = Math.round(placeOdds*10)/10;
+      // ライド(複勝ベース): 同じp(3着以内確率)を使い、控除なし(RIDE_TAKEOUT=1.0)・
+      // 小数点4桁で丸める
+      const rideOddsPlace = clamp(1/(p*RIDE_TAKEOUT), 1.0001, 999999);
+      h.rideOdds = Math.round(rideOddsPlace*10000)/10000;
+      // ライド(単勝ベース): 単勝確率(winProb)を使い、同じく控除なし・小数点4桁
+      const rideOddsWin = clamp(1/(h.winProb*RIDE_TAKEOUT), 1.0001, 999999);
+      h.rideOddsWin = Math.round(rideOddsWin*10000)/10000;
     });
   }
 
@@ -1251,7 +1448,7 @@
           base *= 1.35;
           kickTimer[i]--;
         }
-        const luckBias = (h.luck-50)/50 * 0.08;
+        const luckBias = (h.talent-50)/50 * 0.08;
         const noise = rand(-0.14,0.14) + luckBias;
         base *= (1+noise);
         base = Math.max(base, 0.0008);
@@ -1345,7 +1542,10 @@
   const screens = {
     title: $('#screen-title'), entry: $('#screen-entry'),
     race: $('#screen-race'), result: $('#screen-result'), over: $('#screen-over'),
-    training: $('#screen-training'), calendar: $('#screen-calendar')
+    training: $('#screen-training'), calendar: $('#screen-calendar'), shop: $('#screen-shop')
+    // NOTE: the double-up chance (#doubleupOverlay) is a floating overlay,
+    // not a full screen - it's shown/hidden directly, independent of
+    // showScreen()/showPhaseScreen(), so it isn't listed here.
   };
   function showScreen(name){
     Object.values(screens).forEach(s=>s.classList.add('hidden'));
@@ -1387,6 +1587,38 @@
     }
   }
 
+  // ---------- Medal top-up (shop) ----------
+  function renderShopScreen(){
+    $('#moneyShop').textContent = fmt(state.money);
+    const listEl = $('#shopPackages');
+    listEl.innerHTML = '';
+    SHOP_PACKAGES.forEach(pkg=>{
+      const row = document.createElement('div');
+      row.className = 'shop-package-row' + (pkg.bestValue ? ' best-value' : '');
+      row.innerHTML = `
+        <span><span class="shop-package-medals">${fmt(pkg.medals)}枚</span>
+          <span class="shop-package-price">(${pkg.priceLabel})</span></span>
+        <button class="btn small" data-pkg="${pkg.key}">補充する</button>
+      `;
+      listEl.appendChild(row);
+    });
+    listEl.querySelectorAll('button[data-pkg]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const pkg = SHOP_PACKAGES.find(p=>p.key===btn.dataset.pkg);
+        if(!pkg) return;
+        // TODO: once real payment is wired up, this is where the 決済(payment)
+        // call would go, only granting medals after a successful charge.
+        // For now it's a free/test grant.
+        state.money += pkg.medals;
+        state.best = Math.max(state.best, state.money);
+        saveState();
+        refreshMoneyDisplays();
+        $('#shopFeedback').textContent = `🎉 ${fmt(pkg.medals)}枚を補充しました(現在はテスト版のため無料です)。`;
+        renderShopScreen();
+      });
+    });
+  }
+
   // ---------- Race grade display ----------
   function refreshGradeDisplays(){
     const g = gradeInfo(state.gradeKey);
@@ -1405,6 +1637,17 @@
   }
 
   // ---------- Entry screen ----------
+  // 出走表用: 直近5走の着順とグレードを新しい順に表示(例: 2G3 1G2 4G1 3G3 1海外G1)。
+  // 戦績が無い(デビュー前などの)馬は「―」を表示する。グレードは対応する
+  // グレードカラーで着順の右上に小さく添える。
+  function recentFormText(h){
+    if(!h.recentResults || h.recentResults.length===0) return '―';
+    return h.recentResults.map(r=>{
+      const g = gradeInfo(r.grade || 'G3');
+      return `<span class="recent-form-entry">${r.rank}<span class="recent-form-grade" style="color:${g.color};">${g.key}</span></span>`;
+    }).join(' ');
+  }
+
   function renderEntry(){
     const pos = calendarPosition(state.raceNumber);
     $('#raceNo').textContent = pos.raceOfYear;
@@ -1437,14 +1680,13 @@
       const trendArrow = trendCls==='trend-up' ? '↑' : trendCls==='trend-flat' ? '➡' : '↓';
       tr.innerHTML = `
         <td><span class="cap" style="background:${h.color};color:${h.textColor};">${h.id}</span></td>
-        <td style="text-align:left;">
-          <div>${myBadge}${h.name} <span class="style-badge" style="background:${si.color};">${si.label}</span></div>
-          <div class="small-note">${h.jockey}</div>
-          <div class="horse-comment">${h.comment} <span class="trend-arrow ${trendCls}">${trendArrow}</span></div>
+        <td class="horse-name-cell" style="text-align:left;" title="${h.jockey}">
+          <div class="horse-name-line">${myBadge}${h.name} <span class="style-badge" style="background:${si.color};">${si.label}</span> <span class="horse-comment">${h.comment}</span> <span class="trend-arrow ${trendCls}">${trendArrow}</span></div>
         </td>
         <td><span class="mark-symbol" style="color:${h.markColor};">${h.markSymbol}</span></td>
         <td><span class="pop-rank">${popRank[h.id]}</span>${h.winOdds.toFixed(1)}倍</td>
         <td>${h.placeOdds.toFixed(1)}倍</td>
+        <td class="recent-form-cell">${recentFormText(h)}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -1462,6 +1704,10 @@
   // tap any number of candidate chips per finishing position and every valid
   // combination is generated automatically.
   let selectedBetType = 'win';
+  // ライド専用の追加オプション: 的中条件を単勝/複勝どちらにするか、
+  // フルベット(前走当たり全額)かハーフベット(半額・最大2点購入可)か
+  let rideSubType = 'place';
+  let rideMode = 'full';
   document.querySelectorAll('.type-chip').forEach(c=>{
     c.addEventListener('click', ()=>{
       document.querySelectorAll('.type-chip').forEach(x=>x.classList.remove('active'));
@@ -1476,9 +1722,71 @@
     const info = BET_TYPES[type];
     const isFormation = info.n >= 2;
 
-    $('#amountLabel').textContent = isFormation
-      ? '枚数(1組み合わせあたり・メダル)'
-      : '枚数(メダル)';
+    // ライド: 賭け金は手入力できず、前レースの当たり枚数(フル)またはその
+    // 半額(ハーフ)が自動セットされる。的中条件も単勝/複勝から選べる。
+    const isRide = (type === 'ride');
+    $('#amountLabel').textContent = isRide
+      ? (rideMode==='half' ? '枚数(前レースの当たり枚数の半額を自動セット・変更不可)' : '枚数(前レースの当たり枚数を自動セット・変更不可)')
+      : (isFormation ? '枚数(1組み合わせあたり・メダル)' : '枚数(メダル)');
+    document.querySelectorAll('#amountChips .chip').forEach(c=>{ c.classList.toggle('hidden', isRide); });
+    ['#amtMinus','#amtPlus','#amtAllIn','#betAmountInput'].forEach(sel=>{
+      const el = $(sel); if(el) el.disabled = isRide;
+    });
+
+    const rideOptionsEl = $('#rideOptions');
+    if(isRide){
+      const base = state.lastRaceWinnings||0;
+      const rideBetsSoFar = state.bets.filter(b=>b.type==='ride');
+      const existingRideTotal = rideBetsSoFar.reduce((a,b)=>a+b.amount,0);
+      let raw;
+      if(rideMode==='half'){
+        // ハーフベット: 1点あたりは当たり枚数の半額、ただし1点あたり最大
+        // MAX_RIDE_HALF_PER_TICKET(49999)。最大2点まで購入できるので
+        // 合計は最大 MAX_RIDE_HALF_TOTAL(99998 = 49999×2)
+        const halfBase = Math.floor(base/2);
+        raw = Math.min(halfBase, MAX_RIDE_HALF_PER_TICKET);
+      } else {
+        // フルベット: 1点あたり最大 MAX_RIDE_AMOUNT(99999)
+        raw = Math.min(base, MAX_RIDE_AMOUNT);
+      }
+      const rideAmt = Math.max(0, Math.min(raw, state.money - currentBetsTotal()));
+      currentAmount = rideAmt;
+      $('#betAmountInput').value = rideAmt;
+
+      const rideCount = rideBetsSoFar.length;
+      rideOptionsEl.classList.remove('hidden');
+      rideOptionsEl.innerHTML = `
+        <div class="small-note">的中条件</div>
+        <div id="rideSubTypeChips" class="formation-chip-row">
+          <span class="chip${rideSubType==='win'?' active':''}" data-ridesub="win">単勝</span>
+          <span class="chip${rideSubType==='place'?' active':''}" data-ridesub="place">複勝</span>
+        </div>
+        <div class="small-note" style="margin-top:6px;">ベット方式</div>
+        <div id="rideModeChips" class="formation-chip-row">
+          <span class="chip${rideMode==='full'?' active':''}" data-ridemode="full">フルベット(全額・1点・上限${fmt(MAX_RIDE_AMOUNT)})</span>
+          <span class="chip${rideMode==='half'?' active':''}" data-ridemode="half">ハーフベット(半額・最大2点・合計上限${fmt(MAX_RIDE_HALF_TOTAL)})</span>
+        </div>
+        <p class="small-note" style="margin-top:4px;">${rideMode==='half' ? `ハーフベットは${fmt(rideCount)}/2点購入済み(合計${fmt(existingRideTotal)}/${fmt(MAX_RIDE_HALF_TOTAL)}枚)` : `フルベットは${fmt(rideCount)}/1点購入済み`}</p>
+      `;
+      rideOptionsEl.querySelectorAll('[data-ridesub]').forEach(c=>{
+        c.addEventListener('click', ()=>{
+          if(rideSubType===c.dataset.ridesub) return;
+          rideSubType = c.dataset.ridesub;
+          renderHorsePickers();
+        });
+      });
+      rideOptionsEl.querySelectorAll('[data-ridemode]').forEach(c=>{
+        c.addEventListener('click', ()=>{
+          if(rideMode===c.dataset.ridemode) return;
+          rideMode = c.dataset.ridemode;
+          renderHorsePickers();
+        });
+      });
+    } else {
+      rideOptionsEl.classList.add('hidden');
+      rideOptionsEl.innerHTML = '';
+      setAmount(currentAmount);
+    }
 
     const container = $('#horsePickers');
     container.innerHTML = '';
@@ -1589,8 +1897,12 @@
     let odds;
     if(type==='win'){ odds = state.horses.find(h=>h.id===ids[0]).winOdds; }
     else if(type==='place'){ odds = state.horses.find(h=>h.id===ids[0]).placeOdds; }
+    else if(type==='ride'){
+      const h = state.horses.find(h=>h.id===ids[0]);
+      odds = rideSubType==='win' ? h.rideOddsWin : h.rideOdds;
+    }
     else { odds = comboOdds(type, ids); }
-    preview.textContent = formatOdds(odds)+'倍';
+    preview.textContent = (type==='ride' ? formatRideOdds(odds) : formatOdds(odds))+'倍';
     preview.dataset.valid = '1';
     preview.dataset.odds = odds;
   }
@@ -1600,7 +1912,7 @@
   function currentBetsTotal(){ return state.bets.reduce((a,b)=>a+b.amount,0); }
   function setAmount(v){
     const maxAmt = Math.max(1, state.money - currentBetsTotal());
-    currentAmount = clamp(Math.round(v)||1, 1, Math.max(1,maxAmt));
+    currentAmount = clamp(Math.round(v)||1, 1, Math.max(1, Math.min(maxAmt, MAX_BET_AMOUNT)));
     $('#betAmountInput').value = currentAmount;
   }
   document.addEventListener('click', e=>{
@@ -1633,7 +1945,11 @@
       const rm = document.createElement('button');
       rm.className = 'btn small secondary';
       rm.textContent = '取消';
-      rm.onclick = ()=>{ state.bets.splice(idx,1); renderBetSlip(); };
+      rm.onclick = ()=>{
+        const removed = state.bets.splice(idx,1)[0];
+        renderBetSlip();
+        if(removed && removed.type==='ride' && selectedBetType==='ride') renderHorsePickers();
+      };
       div.appendChild(rm);
       slip.appendChild(div);
     });
@@ -1680,24 +1996,44 @@
     }
     const odds = parseFloat(preview.dataset.odds);
     const amount = currentAmount;
+    if(type==='ride' && (state.lastRaceWinnings||0) <= 0){
+      alert('ライドは前レースの当たり枚数がないと購入できません。');
+      return;
+    }
+    if(type==='ride'){
+      const existingRideCount = state.bets.filter(b=>b.type==='ride').length;
+      const cap = rideMode==='half' ? 2 : 1;
+      if(existingRideCount >= cap){
+        alert(rideMode==='half' ? 'ハーフベットのライドは2点まで購入できます。' : 'フルベットのライドは1点のみ購入できます。');
+        return;
+      }
+    }
     if(!(amount >= 1)){
-      alert('1メダル以上を指定してください。');
+      alert(type==='ride' ? 'ライドで賭けられる枚数がありません。' : '1メダル以上を指定してください。');
       return;
     }
     if(currentBetsTotal() + amount > state.money){
       alert('メダルが足りません。');
       return;
     }
+    const label = type==='ride'
+      ? `ライド(${rideSubType==='win'?'単勝':'複勝'}/${rideMode==='half'?'ハーフ':'フル'}) ${ids.join('-')}`
+      : betLabel(type, ids, false);
     state.bets.push({
       type, horseIds: ids, ordered: info.ordered,
-      amount, odds, label: betLabel(type, ids, false)
+      amount, odds, label,
+      rideSubType: type==='ride' ? rideSubType : undefined,
+      rideMode: type==='ride' ? rideMode : undefined
     });
     renderBetSlip();
+    // ライドは購入点数の残り枠(フル1/ハーフ2)を表示しているので更新する
+    if(type==='ride') renderHorsePickers();
   });
 
   $('#btnClearBets').addEventListener('click', ()=>{
     state.bets = [];
     renderBetSlip();
+    if(selectedBetType==='ride') renderHorsePickers();
   });
 
   // Betting has no time limit - this only runs when the player presses the
@@ -1709,6 +2045,12 @@
     viewingTraining = false;
     showPhaseScreen('race');
     runRacePresentation();
+    // 発走と同時(レース進行と並行)に5回に1回の確率でダブルアップチャンスを
+    // フロート表示。レースは止めず裏で進み続ける - 5秒以内に宝箱を選ばない
+    // 場合は中央の宝箱が自動選択される。
+    if(Math.random() < 0.2){
+      showDoubleUpOverlay();
+    }
   }
 
   // ---------- Race screen ----------
@@ -1933,6 +2275,15 @@
       return { h, i, p };
     });
 
+    // 自分の馬(isMine)のレーンをうっすら金色に塗って、画面全体でひと目で
+    // 追えるようにする(馬本体の強調表示より先に、背景として描画)
+    withPos.forEach(({h,i})=>{
+      if(!h.isMine) return;
+      const laneY = trackTop + i*laneH;
+      ctx.fillStyle = 'rgba(230,195,92,.16)';
+      ctx.fillRect(0, laneY, W, laneH);
+    });
+
     withPos.forEach(({h,i,p})=>{
       const x = startX + p*(finishX-startX);
       const y = trackTop + i*laneH + laneH/2;
@@ -1956,12 +2307,41 @@
         ctx.fill();
       });
 
+      // 自分の馬: 足元に脈打つ金色のハローを描いて、レーン強調と合わせて
+      // 二重に目立たせる(馬本体を描く前に、足元の後ろに敷く)
+      if(h.isMine){
+        const pulse = 0.7 + 0.3*Math.sin(effFrame*0.25);
+        ctx.beginPath();
+        ctx.ellipse(x, y+3, 15*pulse, 6*pulse, 0, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(230,195,92,.45)';
+        ctx.fill();
+      }
+
       const phase = effFrame*0.9 + i*1.7;
       drawHorseFigure(x, y, h, phase, moving);
 
-      // number tag to the left, small
-      ctx.fillStyle = 'rgba(0,0,0,.55)';
+      // 自分の馬: 頭上に「MY」マーカーを表示して一目でわかるようにする
+      if(h.isMine){
+        ctx.save();
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        // canvasのfillStyleはCSS変数を解釈しないため、直接色コードを使う
+        ctx.fillStyle = '#e6c35c';
+        ctx.strokeStyle = 'rgba(0,0,0,.6)';
+        ctx.lineWidth = 3;
+        ctx.strokeText('▼MY', x, y-19);
+        ctx.fillText('▼MY', x, y-19);
+        ctx.restore();
+      }
+
+      // number tag to the left, small - 自分の馬は金色の枠で強調
+      ctx.fillStyle = h.isMine ? 'rgba(122,84,10,.85)' : 'rgba(0,0,0,.55)';
       ctx.fillRect(x-27, y-6, 13, 11);
+      if(h.isMine){
+        ctx.strokeStyle = '#e6c35c';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x-27, y-6, 13, 11);
+      }
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 8px sans-serif';
       ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -2037,9 +2417,107 @@
   function finishRace(sim){
     if(raceAnim){ cancelAnimationFrame(raceAnim); raceAnim = null; }
     skipCurrentRace = null;
+    // 早送り等でレースがダブルアップの5秒判定より先に終わってしまった場合は、
+    // 結果画面に進む前に中央の宝箱を演出無しで確定させておく
+    if(doubleUpForceResolve) doubleUpForceResolve();
     $('#commentary').textContent = `ゴール！ 1着は ${sim.order[0].id}番 ${sim.order[0].name}！`;
     $('#raceProgressLabel').textContent = 'ゴール！';
     setTimeout(()=>{ showResult(sim); }, 900);
+  }
+
+  // ---------- Double-up chance (宝箱5つから1つ選択・フロート表示) ----------
+  // 発走と同時(レース進行と並行して)、5回に1回の確率で発生する。レースは
+  // 止まらずそのまま進み、その上にフロート(オーバーレイ)表示で宝箱が
+  // 出てくる。宝箱の中身の式別(またはALL=全式別)を選んでおくと、実際に
+  // そのレースでその式別の馬券が的中した際に払戻が2倍になる。複数式別が
+  // 同時に入っている場合もある(最大3つ)。5秒以内に選ばなければ、中央
+  // (5つ中3番目)の宝箱が自動選択される。
+  const DOUBLEUP_BET_POOL = ['win','place','umaren','umatan','sanrenpuku','sanrentan'];
+  const DOUBLEUP_AUTO_MS = 5000;
+  let doubleUpBonusTypes = null; // 選んだ宝箱の中身(式別の配列、または['ALL']) - 次のshowResult()で消費・リセットされる
+  let doubleUpAutoTimer = null;
+  let doubleUpCountdownInterval = null;
+  // set only while the overlay is open and unresolved - lets finishRace()
+  // force an immediate (silent) pick if 早送り finishes the race before
+  // the player/timer would otherwise have resolved it
+  let doubleUpForceResolve = null;
+
+  function doubleUpApplies(betType){
+    if(!doubleUpBonusTypes) return false;
+    return doubleUpBonusTypes.includes('ALL') || doubleUpBonusTypes.includes(betType);
+  }
+
+  // 発走と同時に呼ばれる。レース(runRacePresentation)はすでに裏で進行中で、
+  // このオーバーレイはその上に浮かせて表示するだけ - 選択が終わる/タイム
+  // アウトすると自動的に閉じ、レースの進行には一切干渉しない。
+  function showDoubleUpOverlay(){
+    doubleUpBonusTypes = null;
+    let resolved = false;
+
+    const chests = [];
+    for(let i=0;i<5;i++){
+      if(Math.random() < 0.15){
+        chests.push(['ALL']);
+      } else {
+        const shuffled = DOUBLEUP_BET_POOL.slice().sort(()=>Math.random()-0.5);
+        chests.push(shuffled.slice(0, randInt(1,3)));
+      }
+    }
+
+    const overlay = $('#doubleupOverlay');
+    const chestRow = $('#doubleupChests');
+    const countdownEl = $('#doubleupCountdown');
+    chestRow.innerHTML = '';
+    $('#doubleupReveal').innerHTML = '';
+
+    const buttons = chests.map(contents=>{
+      const btn = document.createElement('button');
+      btn.className = 'chest-btn';
+      btn.type = 'button';
+      btn.textContent = '🎁';
+      chestRow.appendChild(btn);
+      return btn;
+    });
+
+    function resolvePick(idx, isAuto, silent){
+      if(resolved) return;
+      resolved = true;
+      doubleUpForceResolve = null;
+      if(doubleUpAutoTimer){ clearTimeout(doubleUpAutoTimer); doubleUpAutoTimer = null; }
+      if(doubleUpCountdownInterval){ clearInterval(doubleUpCountdownInterval); doubleUpCountdownInterval = null; }
+      countdownEl.textContent = '';
+      const contents = chests[idx];
+      doubleUpBonusTypes = contents;
+      if(silent){
+        // レースが早送り等で結果画面に進もうとしている - 演出を待たず即座に閉じる
+        overlay.classList.add('hidden');
+        return;
+      }
+      buttons.forEach((b,i)=>{ b.disabled = true; if(i===idx) b.classList.add('chosen'); });
+      const labels = contents.map(t=> t==='ALL' ? 'ALL(全式別)' : (BET_TYPES[t].label+'×2'));
+      $('#doubleupReveal').innerHTML = `<span class="doubleup-reveal-line">🎉 ${labels.join(' ／ ')} が的中時2倍に！${isAuto?'(自動選択)':''}</span>`;
+      // 結果を一瞬見せてからフロートを閉じる - レースの進行はそのまま
+      setTimeout(()=>{ overlay.classList.add('hidden'); }, 1300);
+    }
+
+    buttons.forEach((btn,idx)=>{
+      btn.addEventListener('click', ()=> resolvePick(idx, false, false));
+    });
+
+    // 5秒以内に選ばなければ中央(5つ中3番目=index2)を自動選択
+    let remaining = Math.ceil(DOUBLEUP_AUTO_MS/1000);
+    countdownEl.textContent = `あと${remaining}秒以内に選択(自動選択: 中央)`;
+    doubleUpCountdownInterval = setInterval(()=>{
+      remaining--;
+      if(!resolved) countdownEl.textContent = `あと${Math.max(remaining,0)}秒以内に選択(自動選択: 中央)`;
+      if(remaining<=0 && doubleUpCountdownInterval){ clearInterval(doubleUpCountdownInterval); doubleUpCountdownInterval = null; }
+    }, 1000);
+    doubleUpAutoTimer = setTimeout(()=>{ resolvePick(2, true, false); }, DOUBLEUP_AUTO_MS);
+    // レースが先に(早送りで)終わってしまった場合、finishRace()がこれを
+    // 呼んで演出無しに即座に中央を確定させる
+    doubleUpForceResolve = ()=> resolvePick(2, true, true);
+
+    overlay.classList.remove('hidden');
   }
 
   // ---------- Result / payout ----------
@@ -2047,6 +2525,8 @@
     switch(bet.type){
       case 'win': return top3Ids[0]===bet.horseIds[0];
       case 'place': return top3Ids.includes(bet.horseIds[0]);
+      case 'ride': // 的中条件は購入時に選んだrideSubType(単勝 or 複勝)による。100%payout+自動賭け金
+        return bet.rideSubType === 'win' ? top3Ids[0]===bet.horseIds[0] : top3Ids.includes(bet.horseIds[0]);
       case 'umaren': {
         const s = new Set(top3Ids.slice(0,2));
         return bet.horseIds.length===2 && bet.horseIds.every(id=>s.has(id));
@@ -2106,6 +2586,11 @@
           persistent.races++;
           if(mineIdx===0) persistent.wins++;
           if(mineIdx<3) persistent.top3++;
+          // 直近5走の記録を更新(新しい結果を先頭に、6件目以降は捨てる) -
+          // これが次走のオッズ/実際の強さに反映される(recentFormBonus)
+          if(!Array.isArray(persistent.recentResults)) persistent.recentResults = [];
+          persistent.recentResults.unshift({ rank: mineIdx+1, field: order.length, grade: state.gradeKey });
+          if(persistent.recentResults.length>5) persistent.recentResults.length = 5;
         }
         const prize = calcPrize(mineIdx, state.gradeKey);
         myPrize += prize;
@@ -2122,21 +2607,23 @@
     fullOddsList.innerHTML = '';
     const [first, second, third] = order;
     const fullOddsRows = [
-      { label:'単勝',   combo:`${first.id}`,                                   odds: first.winOdds },
-      { label:'複勝',   combo:`${first.id}`,                                   odds: first.placeOdds },
-      { label:'複勝',   combo:`${second.id}`,                                  odds: second.placeOdds },
-      { label:'複勝',   combo:`${third.id}`,                                   odds: third.placeOdds },
-      { label:'馬連',   combo:`${first.id} - ${second.id}`,                    odds: comboOdds('umaren', [first.id, second.id]) },
-      { label:'馬単',   combo:`${first.id} → ${second.id}`,                    odds: comboOdds('umatan', [first.id, second.id]) },
-      { label:'三連複', combo:`${top3Ids.slice().sort((a,b)=>a-b).join(' - ')}`, odds: comboOdds('sanrenpuku', top3Ids) },
-      { label:'三連単', combo:`${first.id} → ${second.id} → ${third.id}`,      odds: comboOdds('sanrentan', [first.id, second.id, third.id]) }
+      { type:'win',        label:'単勝',   combo:`${first.id}`,                                   odds: first.winOdds },
+      { type:'place',      label:'複勝',   combo:`${first.id}`,                                   odds: first.placeOdds },
+      { type:'place',      label:'複勝',   combo:`${second.id}`,                                  odds: second.placeOdds },
+      { type:'place',      label:'複勝',   combo:`${third.id}`,                                   odds: third.placeOdds },
+      { type:'umaren',     label:'馬連',   combo:`${first.id} - ${second.id}`,                    odds: comboOdds('umaren', [first.id, second.id]) },
+      { type:'umatan',     label:'馬単',   combo:`${first.id} → ${second.id}`,                    odds: comboOdds('umatan', [first.id, second.id]) },
+      { type:'sanrenpuku', label:'三連複', combo:`${top3Ids.slice().sort((a,b)=>a-b).join(' - ')}`, odds: comboOdds('sanrenpuku', top3Ids) },
+      { type:'sanrentan',  label:'三連単', combo:`${first.id} → ${second.id} → ${third.id}`,      odds: comboOdds('sanrentan', [first.id, second.id, third.id]) }
     ];
     fullOddsRows.forEach(r=>{
+      // ダブルアップでこの式別が対象になっていれば「×2」を確定オッズに添える
+      const doubled = doubleUpApplies(r.type);
       const div = document.createElement('div');
       div.className = 'betslip-item';
       div.innerHTML = `
         <span>${r.label} ／ ${r.combo}</span>
-        <span>${formatOdds(r.odds)}倍</span>
+        <span>${doubled ? '<span class="doubleup-tag">🎉×2</span> ' : ''}${formatOdds(r.odds)}倍</span>
       `;
       fullOddsList.appendChild(div);
     });
@@ -2153,13 +2640,14 @@
       state.bets.forEach(b=>{
         totalStake += b.amount;
         const win = isHit(b, top3Ids);
-        const payout = win ? b.amount*b.odds : 0;
+        const doubled = win && doubleUpApplies(b.type);
+        const payout = win ? b.amount*b.odds*(doubled?2:1) : 0;
         totalPayout += payout;
         const div = document.createElement('div');
         div.className = 'betslip-item';
         div.innerHTML = `
-          <span>${b.label} ／ ${formatOdds(b.odds)}倍 ／ ${fmt(b.amount)}メダル</span>
-          <span class="${win?'payout-win':'payout-lose'}">${win? '的中 +'+fmt(payout)+'メダル' : 'ハズレ'}</span>
+          <span>${b.label} ／ ${b.type==='ride'?formatRideOdds(b.odds):formatOdds(b.odds)}倍 ／ ${fmt(b.amount)}メダル</span>
+          <span class="${win?'payout-win':'payout-lose'}">${win? '的中 +'+fmt(payout)+'メダル'+(doubled?' 🎉2倍!':'') : 'ハズレ'}</span>
         `;
         payoutList.appendChild(div);
       });
@@ -2167,7 +2655,17 @@
 
     state.money = state.money - totalStake + totalPayout + myPrize;
     state.best = Math.max(state.best, state.money);
+    // ライドの原資: 今回の当たり枚数(馬券払戻+出走賞金、賭け金/ステークは含まない)
+    // を記録しておき、次のレースの「ライド」ボタン一発で自動的に賭けられるようにする。
+    // ただし今回のレースで馬券を1点も購入していない場合は0で上書きせず、
+    // 前回(実際に購入した最後のレース)の当たり枚数をそのまま引き継ぐ
+    // (例: 前レースは未購入→前々レースの当たり枚数を維持)
+    if(state.bets.length > 0){
+      state.lastRaceWinnings = totalPayout + myPrize;
+    }
     saveState();
+    // ダブルアップの効果はこの結果画面限り - 消費したのでリセットしておく
+    doubleUpBonusTypes = null;
 
     const summary = document.createElement('div');
     summary.className = 'row';
@@ -2200,11 +2698,12 @@
   let selectedHorseIdx = 0;   // which owned horse is being managed right now
   let creatingNewHorse = false; // whether the "create a new horse" sub-view is showing
 
-  function statBarRow(label, value){
+  function statBarRow(label, value, cap){
+    cap = cap || TRAIN_STAT_CAP;
     return `
       <div class="stat-bar-row">
-        <div class="stat-bar-label"><span>${label}</span><span>${value} / ${TRAIN_STAT_CAP}</span></div>
-        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${(value/TRAIN_STAT_CAP*100).toFixed(0)}%;"></div></div>
+        <div class="stat-bar-label"><span>${label}</span><span>${fmt(value)} / ${fmt(cap)}</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${(value/cap*100).toFixed(0)}%;"></div></div>
       </div>`;
   }
 
@@ -2241,10 +2740,12 @@
       const g = gradeInfo(CALENDAR_GRADES[i]);
       const span = document.createElement('span');
       span.className = 'calendar-slot' + (raceOfYear===pos.raceOfYear ? ' current' : '');
-      span.textContent = g.label;
+      // use the short key (G1/G2/G3/IG1) rather than the full label in this
+      // compact grid - 海外G1 is too wide for a small fixed-height cell
+      span.textContent = g.key;
       span.style.background = g.color;
       span.style.color = g.textColor;
-      span.title = `第${raceOfYear}戦(${pos.year}年目)`;
+      span.title = `第${raceOfYear}戦(${pos.year}年目) ${g.label}`;
       el.appendChild(span);
     }
   }
@@ -2302,24 +2803,43 @@
       $('#myHorseStyleBadge').textContent = si.label;
       $('#myHorseStyleBadge').style.background = si.color;
       $('#myHorseWeek').textContent = '第' + h.week + '週';
-      $('#myHorseRecord').textContent = `騎手: ${h.jockey} ／ 出走${h.races}回 / 1着${h.wins}回 / 3着以内${h.top3}回`;
+      const recentText = (h.recentResults && h.recentResults.length)
+        ? h.recentResults.map(r=>`${r.rank}/${r.field}`).join(' ')
+        : 'なし';
+      $('#myHorseRecord').textContent = `騎手: ${h.jockey} ／ 出走${h.races}回 / 1着${h.wins}回 / 3着以内${h.top3}回 ／ 直近5走: ${recentText}`;
       $('#myHorseAptitudeBadge').textContent = aptitudeGrade(h.aptitude);
 
       // each owned horse's 出走登録 (race entry registration) is independent
-      // and persists across races until explicitly deregistered - multiple
-      // horses can be registered for the same race at once
+      // and only applies to the NEXT race - it's cleared automatically once
+      // that race's field is locked in (see runBettingPhase), so the player
+      // has to register again every cycle; multiple horses can still be
+      // registered for the same race at once. Registering costs an entry
+      // fee equal to that race's 5着賞金 (5th place prize), charged up front
+      // and refunded if the player deregisters before the race actually runs.
       const entering = state.raceHorseIds.includes(h.ownerId);
+      const fee = entryFee(state.nextGradeKey);
       const entryEl = $('#raceEntryChips');
       entryEl.innerHTML = `
-        <span class="chip ${entering?'active':''}" data-enter="1">登録する</span>
+        <span class="chip ${entering?'active':''}" data-enter="1">登録する(出走費${fmt(fee)}枚)</span>
         <span class="chip ${!entering?'active':''}" data-enter="0">登録しない</span>
       `;
       entryEl.querySelectorAll('.chip').forEach(c=>{
         c.addEventListener('click', ()=>{
           const want = c.dataset.enter==='1';
           const idx = state.raceHorseIds.indexOf(h.ownerId);
-          if(want && idx===-1){ state.raceHorseIds.push(h.ownerId); }
-          else if(!want && idx!==-1){ state.raceHorseIds.splice(idx,1); }
+          if(want && idx===-1){
+            if(state.money < fee){
+              $('#trainingFeedback').textContent = `出走費用(${fmt(fee)}メダル)が足りません。`;
+              return;
+            }
+            state.money -= fee;
+            state.raceHorseIds.push(h.ownerId);
+            $('#trainingFeedback').textContent = `🏁 ${h.name}を次のレースに登録しました(出走費 ${fmt(fee)}メダル)。`;
+          } else if(!want && idx!==-1){
+            state.raceHorseIds.splice(idx,1);
+            state.money += fee; // refund - the horse hasn't actually raced yet
+            $('#trainingFeedback').textContent = `${h.name}の出走登録を解除しました(出走費 ${fmt(fee)}メダルを返金)。`;
+          }
           saveState();
           renderTrainingScreen();
           refreshMoneyDisplays();
@@ -2338,20 +2858,23 @@
         statBarRow('スピード', h.speed) +
         statBarRow('スタミナ', h.stamina) +
         statBarRow('根性', h.guts) +
-        statBarRow('運(トレーニング不可)', h.luck);
+        statBarRow('素質(調教で使ったメダルが貯まる)', h.talent||0, TALENT_CAP);
 
       // each owned horse gets its own "1レース1調教" allowance this cycle -
       // rendered as one compact row of 5 buttons (4 facilities + 飼葉), no
       // description text - the button itself both shows the cost and fires
       // the action directly (no separate confirm sub-button)
-      const locked = state.trainedIds.includes(h.ownerId);
+      // 出走登録済みの馬は次のレースに向けて調整に入っているため調教不可
+      const locked = state.trainedIds.includes(h.ownerId) || entering;
       const btnsEl = $('#trainingButtons');
       btnsEl.innerHTML = '';
       if(locked){
         const note = document.createElement('p');
         note.className = 'small-note';
         note.style.color = '#ff9d8a';
-        note.textContent = `${h.name}の今回の調教は完了しました(1頭1レース1回)。次のレースをお待ちください。`;
+        note.textContent = entering
+          ? `${h.name}は次のレースに出走登録済みのため調教できません(登録を解除すると調教できます)。`
+          : `${h.name}の今回の調教は完了しました(1頭1レース1回)。次のレースをお待ちください。`;
         btnsEl.appendChild(note);
       } else {
         TRAIN_FACILITIES.forEach(f=>{
@@ -2429,7 +2952,10 @@
     if(!h) return;
     if(confirm(`${h.name}を手放します。よろしいですか？(能力は失われます)`)){
       const ri = state.raceHorseIds.indexOf(h.ownerId);
-      if(ri!==-1) state.raceHorseIds.splice(ri,1);
+      if(ri!==-1){
+        state.raceHorseIds.splice(ri,1);
+        state.money += entryFee(state.nextGradeKey); // refund the unused entry fee
+      }
       state.myHorses.splice(selectedHorseIdx,1);
       selectedHorseIdx = Math.max(0, selectedHorseIdx-1);
       saveState();
@@ -2464,6 +2990,7 @@
   $('#btnGoTrainingNav').addEventListener('click', ()=>{
     if(currentPhase === 'race') return; // guard in addition to the disabled attribute
     viewingTraining = true;
+    viewingShop = false;
     selectedHorseIdx = 0;
     creatingNewHorse = state.myHorses.length===0;
     recommendedKey = null;
@@ -2472,8 +2999,28 @@
   });
   $('#btnGoBettingNav').addEventListener('click', ()=>{
     creatingNewHorse = false;
+    viewingShop = false;
     if(cycleActive){
       viewingTraining = false;
+      showScreen(currentPhase);
+    } else {
+      showScreen('title');
+    }
+  });
+  // メダル補充画面はいつでも(発走中を除き)開ける。戻る際は元いた画面
+  // (馬券系のフェーズ、または育成中だったなら育成)に自然に復帰させる。
+  $('#btnGoShop').addEventListener('click', ()=>{
+    if(currentPhase === 'race') return; // guard in addition to the disabled attribute
+    viewingShop = true;
+    renderShopScreen();
+    showScreen('shop');
+  });
+  $('#btnCloseShop').addEventListener('click', ()=>{
+    viewingShop = false;
+    if(viewingTraining){
+      renderTrainingScreen();
+      showScreen('training');
+    } else if(cycleActive){
       showScreen(currentPhase);
     } else {
       showScreen('title');
@@ -2489,6 +3036,7 @@
     state.myHorses = [];
     state.raceHorseIds = [];
     state.trainedIds = [];
+    state.lastRaceWinnings = 0;
     state.gradeKey = calendarGradeForRace(state.raceNumber);
     state.nextGradeKey = calendarGradeForRace(state.raceNumber+1);
     saveState();
@@ -2542,11 +3090,12 @@
   let resultTimeout = null;
   let currentPhase = 'entry';   // 'entry' | 'race' | 'result' - the underlying game phase
   let viewingTraining = false;  // true while the player has navigated to the training screen
+  let viewingShop = false;      // true while the player has navigated to the medal top-up screen
   let cycleActive = false;      // true once betting/race/result play has started
 
   function showPhaseScreen(phase){
     currentPhase = phase;
-    if(!viewingTraining){ showScreen(phase); } // showScreen() already refreshes the action bar
+    if(!viewingTraining && !viewingShop){ showScreen(phase); } // showScreen() already refreshes the action bar
     else { updateActionBarState(); } // still update the 発走 button's enabled state in the background
   }
 
@@ -2572,6 +3121,8 @@
     }
     const trainBtn = $('#btnGoTrainingNav');
     if(trainBtn){ trainBtn.disabled = (currentPhase === 'race'); }
+    const shopBtn = $('#btnGoShop');
+    if(shopBtn){ shopBtn.disabled = (currentPhase === 'race'); }
   }
 
   function clearCycleTimers(){
@@ -2582,8 +3133,11 @@
   function runBettingPhase(){
     clearCycleTimers();
     cycleActive = true;
-    newRace();
+    newRace(); // locks in this race's field using whatever was registered last cycle
     state.trainedIds = [];
+    // 出走登録は使い切り: 今回の出走馬はもう確定したので、次のレース分の登録は
+    // 空の状態からプレイヤーに毎回選び直してもらう(自動で登録され続けない)
+    state.raceHorseIds = [];
     saveState();
     renderEntry();
     showPhaseScreen('entry');
